@@ -1,7 +1,7 @@
 # Ember-filestack
 
 [![npm version](https://badge.fury.io/js/ember-filestack.svg)](http://badge.fury.io/js/ember-filestack)
-[![Build Status](https://travis-ci.org/mminkoff/ember-filestack.svg)](https://travis-ci.org/mminkoff/ember-filestack)
+[![Build Status](https://travis-ci.org/mminkoff/ember-filestack.svg)](https://travis-ci.org/mminkoff/ember-filestack.svg?branch=master)
 [![Ember Observer Score](http://emberobserver.com/badges/ember-filestack.svg)](http://emberobserver.com/addons/ember-filestack)
 
 Provides file picking, storing, and converting funtionality from [Filestack](https://www.filestack.com) using v3+ of their API.
@@ -28,7 +28,7 @@ module.exports = function(environment) {
 * Use the filestack.com documentation for options like extensions and services.
 * In your template:
 ```handlebars
-{{ember-filestack-picker options=options onSelection='fileSelected' onClose='onClose' onError='onError'}}
+{{ember-filestack-picker options=options onSelection=(action 'fileSelected') onClose=(action 'onClose') onError=(action 'onError')}}
 ```
 * You should pass options to determine the behavior of the picker.  Documentation can be found here: https://www.filestack.com/docs/javascript-api/pick-v3.
 
