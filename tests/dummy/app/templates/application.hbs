@@ -1,5 +1,15 @@
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
+<h2 id="title">Ember Filestack Demo</h2>
+
+{{#if showFilestack}}
+  {{ember-filestack-picker options=options onSelection=(action 'fileSelected') onClose=(action 'onClose') onError=(action 'onError')}}
+{{/if}}
+<button {{action 'showPicker'}}>Choose file</button>
+
+{{#if pickedUrl}}
+  <h3>You picked:</h3>
+  <div class="picked">
+    <img src={{pickedUrl}} />
+  </div>
+{{/if}}
 
 {{outlet}}
