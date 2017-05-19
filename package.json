@@ -1,7 +1,7 @@
 {
   "name": "ember-filestack",
-  "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "version": "0.0.1",
+  "description": "Ember Addon for https://filestack.com support",
   "keywords": [
     "ember-addon"
   ],
@@ -18,6 +18,8 @@
     "test": "ember try:each"
   },
   "dependencies": {
+    "broccoli-funnel": "^1.2.0",
+    "broccoli-merge-trees": "^2.0.0",
     "ember-cli-babel": "^5.1.7",
     "ember-cli-htmlbars": "^1.1.1",
     "filestack-js": "^0.6.0"

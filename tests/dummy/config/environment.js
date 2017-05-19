@@ -18,8 +18,8 @@ module.exports = function(environment) {
     },
 
     filestackKey: "AOkSBYOLvTqK3GzWzQMOuz",
-    filestackLoadTimeout: 100,
-    
+    filestackLoadTimeout: 1000,
+
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
