@@ -49,7 +49,7 @@ export default Ember.Component.extend({
   openFilepicker: on('didInsertElement', function () {
     scheduleOnce('afterRender', this, function () {
       this.get('filestack.promise').then((filestack) => {
-        let options = this.get('options');
+        let options = this.get('options') || {};
         options['onClose'] = options['onClose'] || this.getCallClose();
         filestack.pick(options).then((data) => {
           this.send('handleSelection', data);
