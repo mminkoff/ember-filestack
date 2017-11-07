@@ -30,7 +30,30 @@ module.exports = function(environment) {
 ```handlebars
 {{ember-filestack-picker options=options onSelection=(action 'fileSelected') onClose=(action 'onClose') onError=(action 'onError')}}
 ```
-* You should pass options to determine the behavior of the picker.  Documentation can be found here: https://www.filestack.com/docs/javascript-api/pick-v3.
+* You then pass the options and actions to determine the picker's behaviour.
+```js
+export default Ember.Component.extend({
+  options: {
+    accept: ['image/*'],
+    maxSize: 10485760
+  },
+
+  actions: {
+    fileSelected(result) {
+      // the `filesUploaded` is an array of files you've just uploaded
+      console.log(result.filesUploaded);
+    },
+    onClose() {
+      // ...
+    },
+    onError(file, error) {
+      // ...
+    }
+  }
+});
+```
+* Complete documentation of all the available options and response data can be found [here](https://www.filestack.com/docs/javascript-api/pick-v3).
+
 
 
 ## Notes
@@ -38,18 +61,18 @@ In order to have access to the `filestack` instance you can:
 * If `Ember.inject.service` is supported then in your object you can use:
 ```javascript
 export default Ember.Component.extend({
-	//injecting the filestack object
-	filestack: Ember.inject.service(),
+  //injecting the filestack object
+  filestack: Ember.inject.service(),
 
-	someFunction: function(){
-		// Use the promise in case you are not sure that your component will be initialized after filestack has been loaded
-		this.get('filestack.promise').then(function(filestack){
-			// do something with filestack
-		});
+  someFunction: function(){
+    // Use the promise in case you are not sure that your component will be initialized after filestack has been loaded
+    this.get('filestack.promise').then(function(filestack){
+      // do something with filestack
+    });
 
-		// OR if you are sure filestack has already been loaded use:
-		this.get('filestack.instance')
-	}
+    // OR if you are sure filestack has already been loaded use:
+    this.get('filestack.instance')
+  }
 });
 ```
 
