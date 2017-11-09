@@ -1,12 +1,15 @@
 {
   "name": "ember-filestack",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Ember Addon for https://filestack.com support",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "filestack",
+    "filepicker",
+    "fastboot"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "Max Minkoff",
   "directories": {
     "doc": "doc",
     "test": "tests"
