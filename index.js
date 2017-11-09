@@ -3,20 +3,25 @@
 var path = require('path');
 var mergeTrees = require('broccoli-merge-trees');
 var Funnel = require('broccoli-funnel');
+var map = require('broccoli-stew').map;
 
 module.exports = {
   name: 'ember-filestack',
 
-  treeForVendor: function(tree) {
+  treeForVendor(tree) {
     var packagePath = path.dirname(require.resolve('filestack-js'));
     var packageTree = new Funnel(this.treeGenerator(packagePath), {
       srcDir: '/',
       destDir: 'filestack-js'
     });
-    return mergeTrees([tree, packageTree]);
+
+    // don't load if FastBoot
+    packageTree = map(packageTree, (content) => `if (typeof FastBoot === 'undefined') { ${content} }`);
+    
+    return new mergeTrees([tree, packageTree]);
   },
 
-  included: function(app) {
+  included(app) {
     this._super.included(app);
 
     if (app.import) {
@@ -24,7 +29,7 @@ module.exports = {
     }
   },
 
-  importDependencies: function(app) {
+  importDependencies(app) {
     app.import('vendor/filestack-js/filestack.js');
     this.import('vendor/shims/filestack.js');
   }
