@@ -1,17 +1,17 @@
 import Ember from 'ember';
 
 const {
-	computed,
-	computed: { alias },
-	getOwner,
-	Helper,
+  computed,
+  computed: { alias },
+  getOwner,
+  Helper,
 } = Ember;
 
 export default Helper.extend({
   config: computed(function() {
     return getOwner(this).resolveRegistration('config:environment');
   }),
-	key: alias('config.filestackKey'),
+  key: alias('config.filestackKey'),
   compute([token], hash) {
     let options = [];
     let resizeOptions, urlRoot;
@@ -21,14 +21,14 @@ export default Helper.extend({
     Object.keys(hash).forEach((key) => {
       let value = hash[key];
       if(value) {
-        options.push(`${key}:${value}`)
+        options.push(`${key}:${value}`);
       }
     });
 
     if(options.length >= 1) {
-      resizeOptions = `resize=${options.join(',')}`
+      resizeOptions = `resize=${options.join(',')}`;
     } else {
-      resizeOptions = null
+      resizeOptions = null;
     }
 
     if(token.match(/http(s?):\/\//)) {
@@ -42,7 +42,6 @@ export default Helper.extend({
       token,
     ].filter((element) => {
       return element;
-    }).join('/')
-    // return .compact().join('/')
+    }).join('/');
   }
 });
