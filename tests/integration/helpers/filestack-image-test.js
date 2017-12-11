@@ -34,6 +34,7 @@ test('it handles missing urls', function(assert) {
 });
 
 test('it handles missing hash arguments', function(assert) {
+  this.set('crop', null);
   this.set('imageToken', '123ABC');
   this.render(hbs`{{filestack-image imageToken width='200' height='300' fit=crop}}`);
   let expected = 'https://process.filestackapi.com/resize=width:200,height:300/123ABC';
