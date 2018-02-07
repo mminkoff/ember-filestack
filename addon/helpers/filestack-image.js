@@ -14,9 +14,16 @@ export default Helper.extend({
   key: alias('config.filestackKey'),
   compute([token], hash) {
     let options = [];
-    let resizeOptions, urlRoot;
+    let resizeOptions, urlRoot, imageUrl;
     if(!token) {
       return '';
+    }
+    if(token.match(/http(s?):\/\//)) {
+      imageUrl = token;
+      urlRoot = `https://process.filestackapi.com/${this.get('key')}`;
+    } else {
+      imageUrl = `https://cdn.filestackcontent.com/${token}`;
+      urlRoot = 'https://process.filestackapi.com';
     }
     Object.keys(hash).forEach((key) => {
       let value = hash[key];
@@ -25,17 +32,13 @@ export default Helper.extend({
       }
     });
 
-    if(options.length >= 1) {
+    // API requires width or height
+    if(options.length >= 1 && (hash.width || hash.height)) {
       resizeOptions = `resize=${options.join(',')}`;
     } else {
-      resizeOptions = null;
+      return imageUrl;
     }
 
-    if(token.match(/http(s?):\/\//)) {
-      urlRoot = `https://process.filestackapi.com/${this.get('key')}`;
-    } else {
-      urlRoot = 'https://process.filestackapi.com';
-    }
     return [
       urlRoot,
       resizeOptions,
