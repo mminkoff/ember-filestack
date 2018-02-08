@@ -2,28 +2,44 @@ import Ember from 'ember';
 
 const {
   computed,
-  computed: { alias },
+  computed: { reads },
   getOwner,
   Helper,
 } = Ember;
+
+const defaultProcessUrl = "https://process.filestackapi.com";
+const defaultContentUrl = "https://cdn.filestackcontent.com";
+const contentUrlRegex = new RegExp(defaultContentUrl);
 
 export default Helper.extend({
   config: computed(function() {
     return getOwner(this).resolveRegistration('config:environment');
   }),
-  key: alias('config.filestackKey'),
+  key: reads('config.filestackKey'),
+  customProcessUrl: reads('config.filestackProcessCDN'),
+  customContentUrl: reads('config.filestackContentCDN'),
+  processUrl: computed(function(){
+    return this.get('customProcessUrl') || defaultProcessUrl;
+  }),
+  contentUrl: computed(function() {
+    return this.get('customContentUrl') || defaultContentUrl;
+  }),
   compute([token], hash) {
     let options = [];
-    let resizeOptions, urlRoot, imageUrl;
+    let urlRoot, imageUrl;
     if(!token) {
       return '';
     }
     if(token.match(/http(s?):\/\//)) {
       imageUrl = token;
-      urlRoot = `https://process.filestackapi.com/${this.get('key')}`;
+      if(this.get('contentUrl') !== defaultContentUrl && imageUrl.match(contentUrlRegex)) {
+        // avoid unnecessary hits to bandwitch quota
+        imageUrl = imageUrl.replace(defaultContentUrl, this.get('contentUrl'));
+      }
+      urlRoot = `${this.get('processUrl')}/${this.get('key')}`;
     } else {
-      imageUrl = `https://cdn.filestackcontent.com/${token}`;
-      urlRoot = 'https://process.filestackapi.com';
+      imageUrl = `${this.get('contentUrl')}/${token}`;
+      urlRoot = this.get('processUrl');
     }
     Object.keys(hash).forEach((key) => {
       let value = hash[key];
@@ -34,14 +50,15 @@ export default Helper.extend({
 
     // API requires width or height
     if(options.length >= 1 && (hash.width || hash.height)) {
-      resizeOptions = `resize=${options.join(',')}`;
+      options = `resize=${options.join(',')}`;
     } else {
+      // avoid unnecessary hits to transform quota
       return imageUrl;
     }
 
     return [
       urlRoot,
-      resizeOptions,
+      options,
       token,
     ].filter((element) => {
       return element;

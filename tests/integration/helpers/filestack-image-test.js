@@ -1,8 +1,19 @@
+import Ember from 'ember';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 
+const {
+  set,
+  getOwner,
+} = Ember;
+
 moduleForComponent('filestack-image', 'helper:filestack-image', {
-  integration: true
+  integration: true,
+  beforeEach: function() {
+    const config = getOwner(this).resolveRegistration('config:environment');
+    set(config, 'filestackContentCDN', null);
+    set(config, 'filestackProcessCDN', null);
+  },
 });
 
 test('it renders a resize with options', function(assert) {
@@ -19,10 +30,11 @@ test('it renders a link to cdn.filestackcontent.com without options', function(a
   assert.equal(this.$().text().trim(), expected);
 });
 
-test('it handles urls', function(assert) {
-  let expected = 'https://d1wtqaffaaj63z.cloudfront.net/images/NY_199_E_of_Hammertown_2014.jpg';
-  this.set('imageUrl', expected);
-  this.render(hbs`{{filestack-image imageUrl}}`);
+test('it handles urls with missing arguments', function(assert) {
+  let imageUrl = 'https://d1wtqaffaaj63z.cloudfront.net/images/NY_199_E_of_Hammertown_2014.jpg';
+  this.set('imageUrl', imageUrl);
+  this.render(hbs`{{filestack-image imageUrl width=500 fit=crop}}`);
+  let expected = `https://process.filestackapi.com/AOkSBYOLvTqK3GzWzQMOuz/resize=width:500/${imageUrl}`;
   assert.equal(this.$().text().trim(), expected);
 });
 
@@ -78,5 +90,66 @@ test('it does not set options if the only options are fit & align', function(ass
   this.set('imageToken', '123ABC');
   this.render(hbs`{{filestack-image imageToken align='top' fit='crop'}}`);
   let expected = 'https://cdn.filestackcontent.com/123ABC';
+  assert.equal(this.$().text().trim(), expected);
+});
+
+test('it uses the config.filestackProcessCDN when passed an image URL', function(assert) {
+  const config = getOwner(this).resolveRegistration('config:environment');
+  const processUrl = 'https://myprocess.cloudfront.com';
+  set(config, 'filestackProcessCDN', processUrl);
+  const imageUrl = 'https://d1wtqaffaaj63z.cloudfront.net/images/NY_199_E_of_Hammertown_2014.jpg';
+
+  this.set('imageUrl', imageUrl);
+  this.render(hbs`{{filestack-image imageUrl width='500' fit='crop'}}`);
+
+  const expected = `${processUrl}/AOkSBYOLvTqK3GzWzQMOuz/resize=width:500,fit:crop/${imageUrl}`;
+  assert.equal(this.$().text().trim(), expected);
+});
+
+test('it uses the config.filestackProcessCDN when passed an image token', function(assert) {
+  const config = getOwner(this).resolveRegistration('config:environment');
+  const processUrl = 'https://myprocess.cloudfront.com';
+  set(config, 'filestackProcessCDN', processUrl);
+
+  this.render(hbs`{{filestack-image '678qwer' width='500' fit='crop'}}`);
+
+  const expected = `${processUrl}/resize=width:500,fit:crop/678qwer`;
+  assert.equal(this.$().text().trim(), expected);
+});
+
+test('it uses the config.filestackContentCDN when passed an image URL that begins with cdn.filestackcontent.com', function(assert) {
+  const config = getOwner(this).resolveRegistration('config:environment');
+  const contentUrl = 'https://mycontent.cloudfront.com';
+  set(config, 'filestackContentCDN', contentUrl);
+  const imageUrl = 'https://cdn.filestackcontent.com/2h25ZGRHTfmQ2DBEt3yR';
+
+  this.set('imageUrl', imageUrl);
+  this.render(hbs`{{filestack-image imageUrl}}`);
+
+  const expected = `${contentUrl}/2h25ZGRHTfmQ2DBEt3yR`
+  assert.equal(this.$().text().trim(), expected);
+});
+
+test('it does not use config.filestackContentCDN when passed an image URL that does not begin with cdn.filestackcontent.com', function(assert) {
+  const config = getOwner(this).resolveRegistration('config:environment');
+  const contentUrl = 'https://mycontent.cloudfront.com';
+  set(config, 'filestackContentCDN', contentUrl);
+  const imageUrl = 'https://d1wtqaffaaj63z.cloudfront.net/images/NY_199_E_of_Hammertown_2014.jpg';
+
+  this.set('imageUrl', imageUrl);
+  this.render(hbs`{{filestack-image imageUrl}}`);
+
+  const expected = imageUrl;
+  assert.equal(this.$().text().trim(), expected);
+});
+
+test('it uses the config.filestackContentCDN when passed an image token', function(assert) {
+  const config = getOwner(this).resolveRegistration('config:environment');
+  const contentUrl = 'https://mycontent.cloudfront.com';
+  set(config, 'filestackContentCDN', contentUrl);
+
+  this.render(hbs`{{filestack-image '678qwer'}}`);
+
+  const expected = `${contentUrl}/678qwer`;
   assert.equal(this.$().text().trim(), expected);
 });
