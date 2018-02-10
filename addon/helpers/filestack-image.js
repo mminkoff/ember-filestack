@@ -30,6 +30,7 @@ export default Helper.extend({
     if(!token) {
       return '';
     }
+
     if(token.match(/http(s?):\/\//)) {
       imageUrl = token;
       if(this.get('contentUrl') !== defaultContentUrl && imageUrl.match(contentUrlRegex)) {
@@ -41,6 +42,12 @@ export default Helper.extend({
       imageUrl = `${this.get('contentUrl')}/${token}`;
       urlRoot = this.get('processUrl');
     }
+
+    // if there is no width AND no height specified, there's no valid resize to do
+    if(!hash.width && !hash.height) {
+      return imageUrl;
+    }
+
     Object.keys(hash).forEach((key) => {
       let value = hash[key];
       if(value) {
@@ -48,13 +55,7 @@ export default Helper.extend({
       }
     });
 
-    // API requires width or height
-    if(options.length >= 1 && (hash.width || hash.height)) {
-      options = `resize=${options.join(',')}`;
-    } else {
-      // avoid unnecessary hits to transform quota
-      return imageUrl;
-    }
+    options = `resize=${options.join(',')}`;
 
     return [
       urlRoot,
