@@ -55,6 +55,29 @@ export default Ember.Component.extend({
 * Complete documentation of all the available options and response data can be found [here](https://www.filestack.com/docs/javascript-api/pick-v3).
 
 
+## Custom CDN
+To minimize your quota usage, you can put filestack behind your own CDNs.
+
+There are two distinct filestack URL's you may want to proxy to.
+
+1. https://process.filestackapi.com
+2. https://cdn.filestackcontent.com
+
+The first is for image transformations (the `{{filestack-image}}` helper lets you easily resize any image -- even arbitrary image URLs). But it renders a URL to that transformation each time, so any time someone visits a page with an image resized (eg https://process.filestackapi.com/resize=width:750/2h25ZGRHTfmQ2DBEt3yR), that will count against your transformation quota. Same for your bandwidth quota, when visiting a page that renders images with https://cdn.filestackcontent.com.
+
+To preserve your quotas, setup two CDNs (eg cloudfront) to point to these URLs. Then configure `ember-filestack` to use your CDNs in ENV:
+```javascript
+module.exports = function(environment) {
+  var ENV = {
+    //...
+    filestackKey: '<your-filestack-key>'
+  filestackProcessCDN: '<your-process-cdn.cloudfront.net>',
+  filestackContentCDN: '<your-content-cdn.cloudfront.net>',
+  };
+```
+
+This way, identical image process or display requests will be cached & come from your CDN, thus saving your quotas on filestack.
+
 
 ## Notes
 In order to have access to the `filestack` instance you can:
