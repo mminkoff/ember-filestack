@@ -24,7 +24,7 @@
     "broccoli-funnel": "^1.2.0",
     "broccoli-merge-trees": "^2.0.0",
     "ember-cli-htmlbars": "^1.1.1",
-    "filestack-js": "^0.9.0",
+    "filestack-js": "^0.11.4",
     "ember-cli-babel": "^6.0.0"
   },
   "devDependencies": {
