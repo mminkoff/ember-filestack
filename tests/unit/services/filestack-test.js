@@ -28,3 +28,9 @@ test('it returns a proper filepicker instance', function (assert) {
     assert.equal(service.get('instance'), filepicker, "'instance' value is the resolved filepicker object");
   });
 });
+
+test('it builds a filestack URL', function(assert) {
+  var service = this.subject();
+  let expected = 'https://mycontent.cloudfront.com/123ABC';
+  assert.equal(service.buildUrl("123ABC"), expected);
+});
