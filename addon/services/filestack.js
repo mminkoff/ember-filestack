@@ -32,13 +32,18 @@ export default Ember.Service.extend({
   processCDN: reads('config.filestackProcessCDN'),
   contentCDN: reads('config.filestackContentCDN'),
 	loadTimeout: reads('config.filestackLoadTimeout'),
+	fastboot: Ember.computed(function() {
+    let owner = Ember.getOwner(this);
+    return owner.lookup('service:fastboot');
+  }),
 
 	init() {
 		this._super(...arguments);
 		this._loadConfig();
-		this._initFilestack();
+		if(!this.get('fastboot.isFastBoot')) {
+			this._initFilestack();
+		}
 	},
-
 	buildUrl(token, hash={}) {
     let options = [];
 		let urlRoot, imageUrl;
