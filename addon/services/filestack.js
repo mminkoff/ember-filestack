@@ -2,131 +2,243 @@ import Ember from 'ember';
 import filestack from 'filestack';
 
 const {
-	computed: { reads },
-	getOwner,
-	getProperties,
-	run: { later },
-	RSVP: { Promise }
+  RSVP: { Promise },
+  computed: { reads },
+  getOwner,
+  getProperties,
+  isEmpty,
+  run: { later },
 } = Ember;
 
 const defaultContentCDN = "https://cdn.filestackcontent.com";
-const defaultContentCDNRegex = new RegExp(defaultContentCDN);
+const defaultContentCDNRegex = new RegExp(`^${defaultContentCDN}`);
 
 const defaultConfig = {
-	filestackProcessCDN: "https://process.filestackapi.com",
-	filestackContentCDN: defaultContentCDN,
-	filestackLoadTimeout: 10000,
+  filestackProcessCDN: "https://process.filestackapi.com",
+  filestackContentCDN: defaultContentCDN,
+  filestackLoadTimeout: 10000,
 };
 
 const configurationKeys = [
-	'filestackContentCDN',
-	'filestackKey',
-	'filestackLoadTimeout',
-	'filestackProcessCDN',
+  'filestackContentCDN',
+  'filestackKey',
+  'filestackLoadTimeout',
+  'filestackProcessCDN',
 ]
 
 export default Ember.Service.extend({
-	promise: null,
-	instance: null,
-	key: reads('config.filestackKey'),
+  promise: null,
+  instance: null,
+  apiKey: reads('config.filestackKey'),
   processCDN: reads('config.filestackProcessCDN'),
   contentCDN: reads('config.filestackContentCDN'),
-	loadTimeout: reads('config.filestackLoadTimeout'),
-	fastboot: Ember.computed(function() {
-    let owner = Ember.getOwner(this);
-    return owner.lookup('service:fastboot');
+  loadTimeout: reads('config.filestackLoadTimeout'),
+  fastboot: Ember.computed(function() {
+    return getOwner(this).lookup('service:fastboot');
+  }),
+  isUsingCustomContentCDN: Ember.computed('contentCDN', function() {
+    return this.get('contentCDN') !== defaultContentCDN;
   }),
 
-	init() {
-		this._super(...arguments);
-		this._loadConfig();
-		if(!this.get('fastboot.isFastBoot')) {
-			this._initFilestack();
-		}
-	},
-	buildUrl(token, hash={}) {
-    let options = [];
-		let urlRoot, imageUrl;
+  init() {
+    this._super(...arguments);
+    this._loadConfig();
+    if (!this.get('fastboot.isFastBoot')) {
+      this._initFilestack();
+    }
+  },
 
-    if(!token) {
-      return '';
-		}
+  imageUrl(handleOrUrl, transformations={}) {
+    if (!handleOrUrl) { return ''; }
 
-    if(token.match(/http(s?):\/\//)) {
-      imageUrl = token;
-      if(this.get('contentCDN') !== defaultContentCDN && imageUrl.match(defaultContentCDNRegex)) {
-        // avoid unnecessary hits to bandwitch quota
-        imageUrl = imageUrl.replace(defaultContentCDN, this.get('contentCDN'));
-      }
-      urlRoot = `${this.get('processCDN')}/${this.get('key')}`;
+    let processUrl, contentUrl;
+    let transformationParts = this._buildTransformations(transformations);
+    let isUrl = handleOrUrl.match(/^http(s?):\/\//);
+
+    if (isUrl) {
+      // If it’s a URL then make sure it always loads from the content CDN
+      // ex: https://cdn.filestackcontent.com/0GI1H4G7TEO8SWRoOpXN => https://theworldsbestcdn.website/0GI1H4G7TEO8SWRoOpXN
+      contentUrl = handleOrUrl.replace(defaultContentCDNRegex, this.get('contentCDN'));
     } else {
-      imageUrl = `${this.get('contentCDN')}/${token}`;
-      urlRoot = this.get('processCDN');
+      // If it’s not a URL treat it as a Filestack FileLink Handle
+      // ex: 0GI1H4G7TEO8SWRoOpXN => https://theworldsbestcdn.website/0GI1H4G7TEO8SWRoOpXN
+      contentUrl = `${this.get('contentCDN')}/${handleOrUrl}`;
     }
 
-    // if there is no width AND no height specified, there's no valid resize to do
-    if(!hash.width && !hash.height) {
-      return imageUrl;
+    if (isEmpty(transformationParts)) {
+      return contentUrl;
+    } else {
+      // if transformations are present then we need to call the Filestack Process API
+      if (isUrl) {
+        // If it’s content from a URL, we need to use the Filestack API key
+        processUrl = `${this.get('processCDN')}/${this.get('apiKey')}`;
+      } else {
+        // If it’s a Filestack FileLink Handle, no API key is necessary
+        processUrl = this.get('processCDN');
+      }
+
+      return [processUrl, transformationParts.join('/'), handleOrUrl].join('/');
+    }
+  },
+
+  _loadConfig() {
+    let ENV = getOwner(this).resolveRegistration('config:environment');
+    let config = getProperties(ENV, ...configurationKeys);
+    let mergedConfig = {};
+
+    // clean out `config` since `getProperties` will return an object with valueless keys
+    configurationKeys.forEach((key) => (config[key] == null) && delete config[key]);
+
+    // cannot use `assign` since it is unavailable in Ember 2.4
+    configurationKeys.forEach((key) => {
+      mergedConfig[key] = config[key] || defaultConfig[key];
+    });
+
+    this.set('config', mergedConfig);
+  },
+
+  _buildTransformations(transformationHashes) {
+    let parts = [];
+    let transformations = Object.assign({}, transformationHashes);
+    let transformationKeys = Object.keys(transformations);
+
+    // Immediately ignore legacy resize options if explicit 'resize' is provided
+    if (transformationKeys.includes('resize')) {
+      delete(transformations.width);
+      delete(transformations.height);
+      delete(transformations.fit);
     }
 
-    Object.keys(hash).forEach((key) => {
-      let value = hash[key];
-      if(value) {
-        options.push(`${key}:${value}`);
+    let legacyResizeKeys = ['width', 'height', 'fit', 'align'].filter((legacyKey) => transformationKeys.includes(legacyKey));
+
+    if (legacyResizeKeys.length > 0) {
+      transformations['resize'] = {};
+
+      legacyResizeKeys.forEach((legacyResizeKey) => {
+        transformations.resize[legacyResizeKey] = transformations[legacyResizeKey];
+        delete(transformations[legacyResizeKey]);
+      });
+    }
+
+    Object.keys(transformations).forEach((transformationName) => {
+      let optionsHash = transformations[transformationName];
+      let options = (this.transformationBuilders[transformationName] || this.transformationBuilders._default)(optionsHash);
+      let transformationValue = options.join(',');
+
+      if (transformationValue) {
+        parts.push(`${transformationName}=${transformationValue}`);
       }
     });
 
-		options = `resize=${options.join(',')}`;
-		imageUrl = [ urlRoot, options, token ].filter((element) => element).join('/');
+    return parts;
+  },
 
-    return imageUrl;
-	},
+  _initFilestack() {
+    var _isPromiseFulfilled = false;
 
-	_loadConfig() {
-		let env = getOwner(this).resolveRegistration('config:environment');
-		let config = getProperties(env, ...configurationKeys);
-		let mergedConfig = {};
+    this.set('promise', new Promise((resolve, reject)=> {
+      const apiKey = this.get('apiKey');
+      if (!apiKey) {
+        reject(new Error("Filestack API key not found."));
+        return;
+      }
 
-		// clean out `config` since `getProperties` will return an object with valueless keys
-		configurationKeys.forEach((key) => (config[key] == null) && delete config[key]);
+      if (filestack && filestack.init) {
+        const instance = filestack.init(apiKey);
 
-		// cannot use `assign` since it is unavailable in Ember 2.4
-		configurationKeys.forEach((key) => {
-			mergedConfig[key] = config[key] || defaultConfig[key];
-		});
+        if (!(this.isDestroyed || this.isDestroying)) {
+          this.set('instance', instance);
+        }
 
-		this.set('config', mergedConfig);
-	},
+        resolve(instance);
+        _isPromiseFulfilled = true;
+      } else {
+        reject(new Error("Filestack not found."));
+        return;
+      }
 
-	_initFilestack: function() {
-		var _isPromiseFulfilled = false;
+      later(this, function(){
+        if (!_isPromiseFulfilled){
+          reject.call(null, new Error('Filestack load timeout.'));
+        }
+      }, this.get('loadTimeout'));
+    }));
+  },
 
-		this.set('promise', new Promise((resolve, reject)=> {
-			const key = this.get('key');
-			if (! key ) {
-				reject(new Error("Filestack key not found."));
-				return;
-			}
+  transformationBuilders: {
+    _default(options) {
+      let optionStrings = [];
 
-			if (filestack && filestack.init) {
-				const instance = filestack.init(key);
+      Object.keys(options).forEach((optionName) => {
+        let optionValue = options[optionName];
 
-				if (!(this.isDestroyed || this.isDestroying)) {
-					this.set('instance', instance);
-				}
+        if (optionValue) {
+          optionStrings.push(`${optionName}:${optionValue}`);
+        }
+      });
 
-				resolve(instance);
-				_isPromiseFulfilled = true;
-			} else {
-				reject(new Error("Filestack not found."));
-				return;
-			}
+      return optionStrings;
+    },
 
-			later(this, function(){
-				if (!_isPromiseFulfilled){
-					reject.call(null, new Error('Filestack load timeout.'));
-				}
-			}, this.get('loadTimeout'));
-		}));
-	},
+    resize(options) {
+      if (!options.width && !options.height) { return []; }
+
+      let optionStrings = [];
+
+      Object.keys(options).forEach((optionName) => {
+        let optionValue = options[optionName];
+
+        if (optionValue) {
+          optionStrings.push(`${optionName}:${optionValue}`);
+        }
+      });
+
+      return optionStrings;
+    },
+  }
 });
+
+// let {
+//   ascii,
+//   blackwhite,
+//   blur,
+//   blurFaces,
+//   border,
+//   cache,
+//   circle,
+//   collage,
+//   compress,
+//   crop,
+//   cropFaces,
+//   debug,
+//   detectFaces,
+//   enhance,
+//   flip,
+//   flop,
+//   modulate,
+//   monochrome,
+//   negative,
+//   oilPaint,
+//   output,
+//   partialBlur,
+//   partialPixelate,
+//   pixelate,
+//   pixelateFaces,
+//   polaroid,
+//   quality,
+//   redeye,
+//   resize,
+//   rotate,
+//   roundedCorners,
+//   security,
+//   sepia,
+//   shadow,
+//   sharpen,
+//   store,
+//   tornEdges,
+//   upscale,
+//   urlscreenshot,
+//   vignette,
+//   watermark,
+//   zip,
+//   } = transformations;
