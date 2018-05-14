@@ -7,7 +7,7 @@ const {
 
 export default Helper.extend({
   filestack: service(),
-  compute([token], hash) {
-    return this.get('filestack').buildUrl(token, hash);
+  compute([handleOrUrl], transformations) {
+    return this.get('filestack').imageUrl(handleOrUrl, transformations);
   }
 });
