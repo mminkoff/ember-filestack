@@ -162,7 +162,7 @@ Image Transformations are best explored in the [Filestack Image Transformation D
 |  | [polaroid](https://www.filestack.com/docs/image-transformations/borders-and-effects#polaroid) |  |
 |  | [quality](https://www.filestack.com/docs/image-transformations/quality) |  |
 |  | [redeye](https://www.filestack.com/docs/image-transformations/enhancements#redeye) |  |
-| :wrench: | [resize](https://www.filestack.com/docs/image-transformations/resize) |  |
+| :wrench: | [resize](https://www.filestack.com/docs/image-transformations/resize) | A resize transformation will not be attempted unless `width` or `height` is provided. |
 |  | [rotate](https://www.filestack.com/docs/image-transformations/rotate#rotate) |  |
 |  | [rounded_corners](https://www.filestack.com/docs/image-transformations/borders-and-effects#rounded-corners) |  |
 |  | [security](https://www.filestack.com/docs/image-transformations/security) |  |
