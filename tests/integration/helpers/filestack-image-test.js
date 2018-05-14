@@ -153,3 +153,10 @@ test('it uses the config.filestackContentCDN when passed an image token', functi
   const expected = `${contentUrl}/678qwer`;
   assert.equal(this.$().text().trim(), expected);
 });
+
+test('it renders a rotate with options', function(assert) {
+  this.set('imageToken', '123ABC');
+  this.render(hbs`{{filestack-image imageToken rotate=(hash deg=38 exif='false')}}`);
+  let expected = 'https://process.filestackapi.com/rotate=deg:38,exif:false/123ABC';
+  assert.equal(this.$().text().trim(), expected);
+});

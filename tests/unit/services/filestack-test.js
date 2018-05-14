@@ -1,8 +1,18 @@
 import { moduleFor, test } from 'ember-qunit';
 import Ember from 'ember';
 
+const {
+  set,
+  getOwner,
+} = Ember;
+
 moduleFor('service:filestack', 'Unit | Service | filestack', {
-  needs: ['config:environment']
+  needs: ['config:environment'],
+  beforeEach: function() {
+    const config = getOwner(this).resolveRegistration('config:environment');
+    set(config, 'filestackContentCDN', null);
+    set(config, 'filestackProcessCDN', null);
+  },
 });
 
 test('it exists', function (assert) {
@@ -27,4 +37,10 @@ test('it returns a proper filepicker instance', function (assert) {
   return service.get('promise').then(function (filepicker) {
     assert.equal(service.get('instance'), filepicker, "'instance' value is the resolved filepicker object");
   });
+});
+
+test('it builds a filestack URL', function(assert) {
+  var service = this.subject();
+  let expected = 'https://cdn.filestackcontent.com/123ABC';
+  assert.equal(service.imageUrl("123ABC"), expected);
 });
