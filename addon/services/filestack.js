@@ -7,6 +7,7 @@ const {
   getOwner,
   getProperties,
   isEmpty,
+  isPresent,
   run: { later },
 } = Ember;
 
@@ -122,7 +123,7 @@ export default Ember.Service.extend({
 
     Object.keys(transformations).forEach((transformationName) => {
       let optionsHash = transformations[transformationName];
-      let options = (this.transformationBuilders[transformationName] || this.transformationBuilders._default)(optionsHash);
+      let options = (this.transformationBuilders[transformationName] || this.transformationBuilders._default).call(this, optionsHash);
       let transformationValue = options.join(',');
 
       if (transformationValue) {
@@ -172,8 +173,8 @@ export default Ember.Service.extend({
       Object.keys(options).forEach((optionName) => {
         let optionValue = options[optionName];
 
-        if (optionValue) {
-          optionStrings.push(`${optionName}:${optionValue}`);
+        if (isPresent(optionValue)) {
+          optionStrings.push(`${optionName}:${optionValue.toString()}`);
         }
       });
 
@@ -183,62 +184,7 @@ export default Ember.Service.extend({
     resize(options) {
       if (!options.width && !options.height) { return []; }
 
-      let optionStrings = [];
-
-      Object.keys(options).forEach((optionName) => {
-        let optionValue = options[optionName];
-
-        if (optionValue) {
-          optionStrings.push(`${optionName}:${optionValue}`);
-        }
-      });
-
-      return optionStrings;
+      return this.transformationBuilders._default(options);
     },
   }
 });
-
-// let {
-//   ascii,
-//   blackwhite,
-//   blur,
-//   blurFaces,
-//   border,
-//   cache,
-//   circle,
-//   collage,
-//   compress,
-//   crop,
-//   cropFaces,
-//   debug,
-//   detectFaces,
-//   enhance,
-//   flip,
-//   flop,
-//   modulate,
-//   monochrome,
-//   negative,
-//   oilPaint,
-//   output,
-//   partialBlur,
-//   partialPixelate,
-//   pixelate,
-//   pixelateFaces,
-//   polaroid,
-//   quality,
-//   redeye,
-//   resize,
-//   rotate,
-//   roundedCorners,
-//   security,
-//   sepia,
-//   shadow,
-//   sharpen,
-//   store,
-//   tornEdges,
-//   upscale,
-//   urlscreenshot,
-//   vignette,
-//   watermark,
-//   zip,
-//   } = transformations;

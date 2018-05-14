@@ -196,9 +196,15 @@ export default Component.extend({
 });
 ```
 
-## Contributing
-### Tests
+## Contributing - Pull Requests Welcome!
+### Adding Transformations
+There are nearly forty transformations for images alone. If you’re looking for a place to contribute consider adding a transformation builder.
 
+A transformation builder accepts an `options` object (e.g., `{ "option1": 123, "option2": false }`) and returns a Filestack-compliant options string (e.g., `"option1:123,option2:false"`).
+
+Adding custom transformation builders `ember-filestack` can prevent users from creating invalid transformations. See the `transformationBuilders` object in the `filestack` service for examples.
+
+### Tests
 * `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
