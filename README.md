@@ -36,7 +36,7 @@ There are two distinct filestack URL's you may want to proxy to.
 This is where files uploaded to Filestack live. [Filestack's CDN](https://www.filestack.com/features/cdn) is excellent, but you may want to configure a proxy to this origin in order to preserve CDN bandwidth on your Filestack account.
 
 #### https://process.filestackapi.com
-This is the entry point for dynamically transforming files. Each transformation produces a unique URL, but each `GET` to one of these URLs will count against your transformation quota regardless of if it’s already been performed. Putting your own CDN in front of this will dramatically reduce the number of transformation requests you make while still giving you the full power of Filestack’s Transformation APIs.
+This is the entry point for dynamically transforming files. Each transformation produces a unique URL, but each `GET` to one of these URLs will count against your transformation quota regardless of whether or not it’s already been performed. Putting your own CDN in front of processing urls will dramatically reduce the number of transformation requests you make while still giving you the full power of Filestack’s Transformation APIs.
 
 To preserve your quotas, setup two CDNs (e.g., AWS CloudFront) to point to these URLs. Then configure `ember-filestack` to use your CDNs in ENV:
 ```js
@@ -51,7 +51,7 @@ module.exports = function(environment) {
 It is recommended to setup both of these CDNs because `ember-filestack` will ensure that Filestack’s CDN and Transformation API are never accessed directly.
 
 ## Usage
-### File Upload
+### File Selection/Upload
 * Use the [Filestack Pick Documentation](https://www.filestack.com/docs/javascript-api/pick-v3) to determine what `options` you want to configure.
 
 #### Template
