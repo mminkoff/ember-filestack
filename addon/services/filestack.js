@@ -4,6 +4,7 @@ import filestack from 'filestack';
 const {
   RSVP: { Promise },
   assign,
+  computed,
   computed: { reads },
   getOwner,
   getProperties,
@@ -35,10 +36,10 @@ export default Ember.Service.extend({
   processCDN: reads('config.filestackProcessCDN'),
   contentCDN: reads('config.filestackContentCDN'),
   loadTimeout: reads('config.filestackLoadTimeout'),
-  fastboot: Ember.computed(function() {
+  fastboot: computed(function() {
     return getOwner(this).lookup('service:fastboot');
   }),
-  isUsingCustomContentCDN: Ember.computed('contentCDN', function() {
+  isUsingCustomContentCDN: computed('contentCDN', function() {
     return this.get('contentCDN') !== defaultContentCDN;
   }),
 
