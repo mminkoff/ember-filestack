@@ -118,51 +118,44 @@ export default Component.extend({
 
 
 ### Transformations
-The Filestack Transformations API provides a way to dynamically request a transformed version of any file (even ones not uploaded to Filestack). This add-on currently only supports Image Transformations. There are plans to complete support for all Transformation types in future versions.
-
-|                    | Status |
-|:-------------------|:--------|
-|                    | Default Support (converts transformation options directly) |
-| :x:                | Not Supported |
-| :wrench:           | Partial Support |
-| :white_check_mark: | Full Support|
-
-Filestack Transformation names are snakecased (e.g., blur_faces, rounded_corners).
+The Filestack Transformations API provides a way to dynamically request a transformed version of any file (even ones not uploaded to Filestack).
 
 #### Image
-Image Transformations are best explored in the [Filestack Image Transformation Docs](https://www.filestack.com/docs/image-transformations). The table below describes how well supported each Image Transformation is. You can directly access _every_ transformation, but be aware that it is your responsibility to not produce invalid transformations. For example, attempting to resize an SVG image will cause Filestack to return a 400 Error as `resize` is not supported for SVGs.
+[Filestack Image Transformation Docs](https://www.filestack.com/docs/image-transformations)
 
-|    | Transformation | Notes |
-|:---|:--------|:------------|
-|  | [ascii](https://www.filestack.com/docs/image-transformations/ascii) |  |
-|  | [blackwhite](https://www.filestack.com/docs/image-transformations/filters#blackwhite) |  |
-|  | [blur_faces](https://www.filestack.com/docs/image-transformations/facial-detection#blur_faces) |  |
-|  | [blur](https://www.filestack.com/docs/image-transformations/filters#blur) |  |
-|  | [border](https://www.filestack.com/docs/image-transformations/borders-and-effects#border) |  |
-|  | [cache](https://www.filestack.com/docs/image-transformations/caching) |  |
-|  | [circle](https://www.filestack.com/docs/image-transformations/borders-and-effects#circle) |  |
-|  | [collage](https://www.filestack.com/docs/image-transformations/collage) |  |
-|  | [compress](https://www.filestack.com/docs/image-transformations/compress) |  |
-|  | [crop_faces](https://www.filestack.com/docs/image-transformations/facial-detection#crop_faces) |  |
-|  | [crop](https://www.filestack.com/docs/image-transformations/crop) |  |
-|  | [debug](https://www.filestack.com/docs/image-transformations/debug) |  |
-|  | [detect_faces](https://www.filestack.com/docs/image-transformations/facial-detection#detect_faces) |  |
-|  | [enhance](https://www.filestack.com/docs/image-transformations/enchancements#enhance) |  |
-|  | [flip](https://www.filestack.com/docs/image-transformations/rotate#flip) |  |
-|  | [flop](https://www.filestack.com/docs/image-transformations/rotate#flop) |  |
-|  | [modulate](https://www.filestack.com/docs/image-transformations/filters#modulate) |  |
-|  | [monochrome](https://www.filestack.com/docs/image-transformations/filters#monochrome) |  |
-|  | [negative](https://www.filestack.com/docs/image-transformations/filters#negative) |  |
-|  | [oil_paint](https://www.filestack.com/docs/image-transformations/filters#oil_paint) |  |
-|  | [output](https://www.filestack.com/docs/image-transformations/conversion) |  |
-|  | [partial_blur](https://www.filestack.com/docs/image-transformations/filters#partial_blur) |  |
-|  | [partial_pixelate](https://www.filestack.com/docs/image-transformations/filters#partial_pixelate) |  |
-|  | [pixelate_faces](https://www.filestack.com/docs/image-transformations/facial-detection#pixelate_faces) |  |
-|  | [pixelate](https://www.filestack.com/docs/image-transformations/filters#pixelate) |  |
-|  | [polaroid](https://www.filestack.com/docs/image-transformations/borders-and-effects#polaroid) |  |
-|  | [quality](https://www.filestack.com/docs/image-transformations/quality) |  |
-|  | [redeye](https://www.filestack.com/docs/image-transformations/enhancements#redeye) |  |
-| :wrench: | [resize](https://www.filestack.com/docs/image-transformations/resize) | A resize transformation will not be attempted unless `width` or `height` is provided. |
+You can use any transformation, but be aware that it is your responsibility to produce a valid transformation. For example, Filestack will return a `400 Bad Request` if you attempt to resize an SVG.
+
+| Transformation | Notes |
+|:--------|:------------|
+| [ascii](https://www.filestack.com/docs/image-transformations/ascii) |  |
+| [blackwhite](https://www.filestack.com/docs/image-transformations/filters#blackwhite) |  |
+| [blur_faces](https://www.filestack.com/docs/image-transformations/facial-detection#blur_faces) |  |
+| [blur](https://www.filestack.com/docs/image-transformations/filters#blur) |  |
+| [border](https://www.filestack.com/docs/image-transformations/borders-and-effects#border) |  |
+| [cache](https://www.filestack.com/docs/image-transformations/caching) |  |
+| [circle](https://www.filestack.com/docs/image-transformations/borders-and-effects#circle) |  |
+| [collage](https://www.filestack.com/docs/image-transformations/collage) |  |
+| [compress](https://www.filestack.com/docs/image-transformations/compress) |  |
+| [crop_faces](https://www.filestack.com/docs/image-transformations/facial-detection#crop_faces) |  |
+| [crop](https://www.filestack.com/docs/image-transformations/crop) |  |
+| [debug](https://www.filestack.com/docs/image-transformations/debug) |  |
+| [detect_faces](https://www.filestack.com/docs/image-transformations/facial-detection#detect_faces) |  |
+| [enhance](https://www.filestack.com/docs/image-transformations/enchancements#enhance) |  |
+| [flip](https://www.filestack.com/docs/image-transformations/rotate#flip) |  |
+| [flop](https://www.filestack.com/docs/image-transformations/rotate#flop) |  |
+| [modulate](https://www.filestack.com/docs/image-transformations/filters#modulate) |  |
+| [monochrome](https://www.filestack.com/docs/image-transformations/filters#monochrome) |  |
+| [negative](https://www.filestack.com/docs/image-transformations/filters#negative) |  |
+| [oil_paint](https://www.filestack.com/docs/image-transformations/filters#oil_paint) |  |
+| [output](https://www.filestack.com/docs/image-transformations/conversion) |  |
+| [partial_blur](https://www.filestack.com/docs/image-transformations/filters#partial_blur) |  |
+| [partial_pixelate](https://www.filestack.com/docs/image-transformations/filters#partial_pixelate) |  |
+| [pixelate_faces](https://www.filestack.com/docs/image-transformations/facial-detection#pixelate_faces) |  |
+| [pixelate](https://www.filestack.com/docs/image-transformations/filters#pixelate) |  |
+| [polaroid](https://www.filestack.com/docs/image-transformations/borders-and-effects#polaroid) |  |
+| [quality](https://www.filestack.com/docs/image-transformations/quality) |  |
+| [redeye](https://www.filestack.com/docs/image-transformations/enhancements#redeye) |  |
+|  | [resize](https://www.filestack.com/docs/image-transformations/resize) | A resize transformation will not be attempted unless `width` or `height` is provided. |
 |  | [rotate](https://www.filestack.com/docs/image-transformations/rotate#rotate) |  |
 |  | [rounded_corners](https://www.filestack.com/docs/image-transformations/borders-and-effects#rounded-corners) |  |
 |  | [security](https://www.filestack.com/docs/image-transformations/security) |  |
@@ -178,7 +171,7 @@ Image Transformations are best explored in the [Filestack Image Transformation D
 |  | [zip](https://www.filestack.com/docs/image-transformations/zip) |  |
 
 ### Direct Filestack JS API Access
-In order to access the browser’s `filestack` instance we recommended that you use `filestack.promise`.
+In order to access the browser’s `filestack` instance we recommend that you use `filestack.promise`.
 ```js
 export default Component.extend({
   //injecting the filestack object
