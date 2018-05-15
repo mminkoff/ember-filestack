@@ -3,6 +3,7 @@ import filestack from 'filestack';
 
 const {
   RSVP: { Promise },
+  assign,
   computed: { reads },
   getOwner,
   getProperties,
@@ -85,32 +86,27 @@ export default Ember.Service.extend({
   _loadConfig() {
     let ENV = getOwner(this).resolveRegistration('config:environment');
     let config = getProperties(ENV, ...configurationKeys);
-    let mergedConfig = {};
-
     // clean out `config` since `getProperties` will return an object with valueless keys
     configurationKeys.forEach((key) => (config[key] == null) && delete config[key]);
 
-    // cannot use `assign` since it is unavailable in Ember 2.4
-    configurationKeys.forEach((key) => {
-      mergedConfig[key] = config[key] || defaultConfig[key];
-    });
+    let mergedConfig = assign({}, defaultConfig, config);
 
     this.set('config', mergedConfig);
   },
 
   _buildTransformations(transformationHashes) {
     let parts = [];
-    let transformations = Object.assign({}, transformationHashes);
+    let transformations = assign({}, transformationHashes);
     let transformationKeys = Object.keys(transformations);
 
     // Immediately ignore legacy resize options if explicit 'resize' is provided
-    if (transformationKeys.includes('resize')) {
+    if (transformationKeys.indexOf('resize') !== -1) {
       delete(transformations.width);
       delete(transformations.height);
       delete(transformations.fit);
     }
 
-    let legacyResizeKeys = ['width', 'height', 'fit', 'align'].filter((legacyKey) => transformationKeys.includes(legacyKey));
+    let legacyResizeKeys = ['width', 'height', 'fit', 'align'].filter((legacyKey) => transformationKeys.indexOf(legacyKey) !== -1);
 
     if (legacyResizeKeys.length > 0) {
       transformations['resize'] = {};
