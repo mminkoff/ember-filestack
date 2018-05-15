@@ -48,7 +48,7 @@ module.exports = function(environment) {
   };
 ```
 
-It is recommended to setup both of these CDNs because `ember-filestack` will ensure that Filestack’s CDN and Transformation API are never accessed directly.
+We recommend that you set up both of these CDNs because `ember-filestack` will ensure that Filestack’s CDN and Transformation API are never accessed directly.
 
 ## Usage
 ### File Selection/Upload
@@ -178,7 +178,7 @@ Image Transformations are best explored in the [Filestack Image Transformation D
 |  | [zip](https://www.filestack.com/docs/image-transformations/zip) |  |
 
 ### Direct Filestack JS API Access
-In order to have access to the browser’s `filestack` instance it is recommended to use `filestack.promise`.
+In order to access the browser’s `filestack` instance we recommended that you use `filestack.promise`.
 ```js
 export default Component.extend({
   //injecting the filestack object
