@@ -125,6 +125,8 @@ The Filestack Transformations API provides a way to dynamically request a transf
 
 You can use any transformation, but be aware that it is your responsibility to produce a valid transformation. For example, Filestack will return a `400 Bad Request` if you attempt to resize an SVG.
 
+Below you’ll find a list of transformations and notes on how `ember-filestack` treats the transformation.
+
 | Transformation | Notes |
 |:--------|:------------|
 | [ascii](https://www.filestack.com/docs/image-transformations/ascii) |  |
@@ -155,20 +157,20 @@ You can use any transformation, but be aware that it is your responsibility to p
 | [polaroid](https://www.filestack.com/docs/image-transformations/borders-and-effects#polaroid) |  |
 | [quality](https://www.filestack.com/docs/image-transformations/quality) |  |
 | [redeye](https://www.filestack.com/docs/image-transformations/enhancements#redeye) |  |
-|  | [resize](https://www.filestack.com/docs/image-transformations/resize) | A resize transformation will not be attempted unless `width` or `height` is provided. |
-|  | [rotate](https://www.filestack.com/docs/image-transformations/rotate#rotate) |  |
-|  | [rounded_corners](https://www.filestack.com/docs/image-transformations/borders-and-effects#rounded-corners) |  |
-|  | [security](https://www.filestack.com/docs/image-transformations/security) |  |
-|  | [sepia](https://www.filestack.com/docs/image-transformations/filters#sepia) |  |
-|  | [shadow](https://www.filestack.com/docs/image-transformations/borders-and-effects#shadow) |  |
-|  | [sharpen](https://www.filestack.com/docs/image-transformations/filters#sharpen) |  |
-|  | [store](https://www.filestack.com/docs/image-transformations/store) |  |
-|  | [torn_edges](https://www.filestack.com/docs/image-transformations/borders-and-effects#torn-edges) |  |
-|  | [upscale](https://www.filestack.com/docs/image-transformations/enhancements#upscale) |  |
-|  | [urlscreenshot](https://www.filestack.com/docs/image-transformations/screenshot) |  |
-|  | [vignette](https://www.filestack.com/docs/image-transformations/borders-and-effects#vignette) |  |
-|  | [watermark](https://www.filestack.com/docs/image-transformations/watermark) |  |
-|  | [zip](https://www.filestack.com/docs/image-transformations/zip) |  |
+| [resize](https://www.filestack.com/docs/image-transformations/resize) | A resize transformation will not be attempted unless `width` or `height` is provided. |
+| [rotate](https://www.filestack.com/docs/image-transformations/rotate#rotate) |  |
+| [rounded_corners](https://www.filestack.com/docs/image-transformations/borders-and-effects#rounded-corners) |  |
+| [security](https://www.filestack.com/docs/image-transformations/security) |  |
+| [sepia](https://www.filestack.com/docs/image-transformations/filters#sepia) |  |
+| [shadow](https://www.filestack.com/docs/image-transformations/borders-and-effects#shadow) |  |
+| [sharpen](https://www.filestack.com/docs/image-transformations/filters#sharpen) |  |
+| [store](https://www.filestack.com/docs/image-transformations/store) |  |
+| [torn_edges](https://www.filestack.com/docs/image-transformations/borders-and-effects#torn-edges) |  |
+| [upscale](https://www.filestack.com/docs/image-transformations/enhancements#upscale) |  |
+| [urlscreenshot](https://www.filestack.com/docs/image-transformations/screenshot) |  |
+| [vignette](https://www.filestack.com/docs/image-transformations/borders-and-effects#vignette) |  |
+| [watermark](https://www.filestack.com/docs/image-transformations/watermark) |  |
+| [zip](https://www.filestack.com/docs/image-transformations/zip) |  |
 
 ### Direct Filestack JS API Access
 In order to access the browser’s `filestack` instance we recommend that you use `filestack.promise`.
