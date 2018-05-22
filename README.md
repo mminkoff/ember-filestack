@@ -87,6 +87,7 @@ Complete documentation of all the available options and response data can be fou
 
 ### Display
 #### Template Examples
+The `filestack-image` helper accepts a filestack handle or any image url plus any number of [transformations](#transformations) in the format `transformationName=(hash ...)`.
 ```handlebars
   {{filestack-image filestackHandleOrUrl}}
   {{filestack-image filestackHandleOrUrl resize=(hash width=50 height=50 fit='scale')}}
@@ -125,7 +126,7 @@ The Filestack Transformations API provides a way to dynamically request a transf
 
 You can use any transformation, but be aware that it is your responsibility to produce a valid transformation. For example, Filestack will return a `400 Bad Request` if you attempt to resize an SVG.
 
-Below you’ll find a list of transformations and notes on how `ember-filestack` treats the transformation.
+Below you’ll find a list of transformations and notes on any further handling of the transformation that `ember-filestack` currently does.
 
 | Transformation | Notes |
 |:--------|:------------|
