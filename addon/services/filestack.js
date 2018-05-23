@@ -2,57 +2,186 @@ import Ember from 'ember';
 import filestack from 'filestack';
 
 const {
-	computed,
-	computed: { alias },
-	getOwner,
-	on,
-	run: { later },
-	RSVP: { Promise }
+  RSVP: { Promise },
+  assign,
+  computed,
+  computed: { reads },
+  getOwner,
+  getProperties,
+  isEmpty,
+  isPresent,
+  run: { later },
 } = Ember;
 
+const defaultContentCDN = "https://cdn.filestackcontent.com";
+const defaultContentCDNRegex = new RegExp(`^${defaultContentCDN}`);
+
+const defaultConfig = {
+  filestackProcessCDN: "https://process.filestackapi.com",
+  filestackContentCDN: defaultContentCDN,
+  filestackLoadTimeout: 10000,
+};
+
+const configurationKeys = [
+  'filestackContentCDN',
+  'filestackKey',
+  'filestackLoadTimeout',
+  'filestackProcessCDN',
+]
+
 export default Ember.Service.extend({
-	promise: null,
-	instance: null,
-
-	_initFilestack: on('init', function() {
-		var _isPromiseFulfilled = false;
-
-		this.set('promise', new Promise((resolve, reject)=> {
-			const key = this.get('key');
-			if (! key ) {
-				reject(new Error("Filestack key not found."));
-				return;
-			}
-
-			if (filestack && filestack.init) {
-				const instance = filestack.init(key);
-
-				if (!(this.isDestroyed || this.isDestroying)) {
-					this.set('instance', instance);
-				}
-
-				resolve(instance);
-				_isPromiseFulfilled = true;
-			} else {
-				reject(new Error("Filestack not found."));
-				return;
-			}
-
-			later(this, function(){
-				if (!_isPromiseFulfilled){
-					reject.call(null, new Error('Filestack load timeout.'));
-				}
-			}, this.get('loadTimeout'));
-		}));
-	}),
-
-  config: computed(function() {
-    return getOwner(this).resolveRegistration('config:environment');
+  promise: null,
+  instance: null,
+  apiKey: reads('config.filestackKey'),
+  processCDN: reads('config.filestackProcessCDN'),
+  contentCDN: reads('config.filestackContentCDN'),
+  loadTimeout: reads('config.filestackLoadTimeout'),
+  fastboot: computed(function() {
+    return getOwner(this).lookup('service:fastboot');
+  }),
+  isUsingCustomContentCDN: computed('contentCDN', function() {
+    return this.get('contentCDN') !== defaultContentCDN;
   }),
 
-	key: alias('config.filestackKey'),
+  init() {
+    this._super(...arguments);
+    this._loadConfig();
+    if (!this.get('fastboot.isFastBoot')) {
+      this._initFilestack();
+    }
+  },
 
-	loadTimeout: computed('config.filestackLoadTimeout', function() {
-    return this.get('config.filestackLoadTimeout') || 10000;
-  })
+  imageUrl(handleOrUrl, transformations={}) {
+    if (!handleOrUrl) { return ''; }
+
+    let processUrl, contentUrl;
+    let transformationParts = this._buildTransformations(transformations);
+    let isUrl = handleOrUrl.match(/^http(s?):\/\//);
+
+    if (isUrl) {
+      // If it’s a URL then make sure it always loads from the content CDN
+      // ex: https://cdn.filestackcontent.com/0GI1H4G7TEO8SWRoOpXN => https://theworldsbestcdn.website/0GI1H4G7TEO8SWRoOpXN
+      contentUrl = handleOrUrl.replace(defaultContentCDNRegex, this.get('contentCDN'));
+    } else {
+      // If it’s not a URL treat it as a Filestack FileLink Handle
+      // ex: 0GI1H4G7TEO8SWRoOpXN => https://theworldsbestcdn.website/0GI1H4G7TEO8SWRoOpXN
+      contentUrl = `${this.get('contentCDN')}/${handleOrUrl}`;
+    }
+
+    if (isEmpty(transformationParts)) {
+      return contentUrl;
+    } else {
+      // if transformations are present then we need to call the Filestack Process API
+      if (isUrl) {
+        // If it’s content from a URL, we need to use the Filestack API key
+        processUrl = `${this.get('processCDN')}/${this.get('apiKey')}`;
+      } else {
+        // If it’s a Filestack FileLink Handle, no API key is necessary
+        processUrl = this.get('processCDN');
+      }
+
+      return [processUrl, transformationParts.join('/'), handleOrUrl].join('/');
+    }
+  },
+
+  _loadConfig() {
+    let ENV = getOwner(this).resolveRegistration('config:environment');
+    let config = getProperties(ENV, ...configurationKeys);
+    // clean out `config` since `getProperties` will return an object with valueless keys
+    configurationKeys.forEach((key) => (config[key] == null) && delete config[key]);
+
+    let mergedConfig = assign({}, defaultConfig, config);
+
+    this.set('config', mergedConfig);
+  },
+
+  _buildTransformations(transformationHashes) {
+    let parts = [];
+    let transformations = assign({}, transformationHashes);
+    let transformationKeys = Object.keys(transformations);
+
+    // Immediately ignore legacy resize options if explicit 'resize' is provided
+    if (transformationKeys.indexOf('resize') !== -1) {
+      delete(transformations.width);
+      delete(transformations.height);
+      delete(transformations.fit);
+    }
+
+    let legacyResizeKeys = ['width', 'height', 'fit', 'align'].filter((legacyKey) => transformationKeys.indexOf(legacyKey) !== -1);
+
+    if (legacyResizeKeys.length > 0) {
+      transformations['resize'] = {};
+
+      legacyResizeKeys.forEach((legacyResizeKey) => {
+        transformations.resize[legacyResizeKey] = transformations[legacyResizeKey];
+        delete(transformations[legacyResizeKey]);
+      });
+    }
+
+    Object.keys(transformations).forEach((transformationName) => {
+      let optionsHash = transformations[transformationName];
+      let options = (this.transformationBuilders[transformationName] || this.transformationBuilders._default).call(this, optionsHash);
+      let transformationValue = options.join(',');
+
+      if (transformationValue) {
+        parts.push(`${transformationName}=${transformationValue}`);
+      }
+    });
+
+    return parts;
+  },
+
+  _initFilestack() {
+    var _isPromiseFulfilled = false;
+
+    this.set('promise', new Promise((resolve, reject)=> {
+      const apiKey = this.get('apiKey');
+      if (!apiKey) {
+        reject(new Error("Filestack API key not found."));
+        return;
+      }
+
+      if (filestack && filestack.init) {
+        const instance = filestack.init(apiKey);
+
+        if (!(this.isDestroyed || this.isDestroying)) {
+          this.set('instance', instance);
+        }
+
+        resolve(instance);
+        _isPromiseFulfilled = true;
+      } else {
+        reject(new Error("Filestack not found."));
+        return;
+      }
+
+      later(this, function(){
+        if (!_isPromiseFulfilled){
+          reject.call(null, new Error('Filestack load timeout.'));
+        }
+      }, this.get('loadTimeout'));
+    }));
+  },
+
+  transformationBuilders: {
+    _default(options) {
+      let optionStrings = [];
+
+      Object.keys(options).forEach((optionName) => {
+        let optionValue = options[optionName];
+
+        if (isPresent(optionValue)) {
+          optionStrings.push(`${optionName}:${optionValue.toString()}`);
+        }
+      });
+
+      return optionStrings;
+    },
+
+    resize(options) {
+      if (!options.width && !options.height) { return []; }
+
+      return this.transformationBuilders._default(options);
+    },
+  }
 });
