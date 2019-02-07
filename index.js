@@ -1,23 +1,19 @@
-/* eslint-env node */
 'use strict';
-var path = require('path');
-var mergeTrees = require('broccoli-merge-trees');
-var Funnel = require('broccoli-funnel');
-var map = require('broccoli-stew').map;
+const path = require('path');
+const mergeTrees = require('broccoli-merge-trees');
+const Funnel = require('broccoli-funnel');
+const fastbootTransform = require('fastboot-transform');
 
 module.exports = {
-  name: 'ember-filestack',
+  name: require('./package').name,
 
   treeForVendor(tree) {
-    var packagePath = path.dirname(require.resolve('filestack-js'));
-    var packageTree = new Funnel(this.treeGenerator(packagePath), {
+    let packagePath = path.dirname(require.resolve('filestack-js'));
+    let packageTree = fastbootTransform(new Funnel(this.treeGenerator(packagePath), {
       srcDir: '/',
       destDir: 'filestack-js'
-    });
+    }));
 
-    // don't load if FastBoot
-    packageTree = map(packageTree, (content) => `if (typeof FastBoot === 'undefined') { ${content} }`);
-    
     return new mergeTrees([tree, packageTree]);
   },
 

@@ -1,23 +1,18 @@
-import Ember from 'ember';
+import Service from '@ember/service';
+import { Promise } from 'rsvp';
+import { assign } from '@ember/polyfills';
+import { reads } from '@ember/object/computed';
+import { getOwner } from '@ember/application';
+import { getProperties, computed } from '@ember/object';
+import { isPresent, isEmpty } from '@ember/utils';
+import { later } from '@ember/runloop';
 import filestack from 'filestack';
 
-const {
-  RSVP: { Promise },
-  assign,
-  computed,
-  computed: { reads },
-  getOwner,
-  getProperties,
-  isEmpty,
-  isPresent,
-  run: { later },
-} = Ember;
-
-const defaultContentCDN = "https://cdn.filestackcontent.com";
+const defaultContentCDN = 'https://cdn.filestackcontent.com';
 const defaultContentCDNRegex = new RegExp(`^${defaultContentCDN}`);
 
 const defaultConfig = {
-  filestackProcessCDN: "https://process.filestackapi.com",
+  filestackProcessCDN: 'https://process.filestackapi.com',
   filestackContentCDN: defaultContentCDN,
   filestackLoadTimeout: 10000,
 };
@@ -29,7 +24,7 @@ const configurationKeys = [
   'filestackProcessCDN',
 ]
 
-export default Ember.Service.extend({
+export default Service.extend({
   promise: null,
   instance: null,
   apiKey: reads('config.filestackKey'),
@@ -137,7 +132,7 @@ export default Ember.Service.extend({
     this.set('promise', new Promise((resolve, reject)=> {
       const apiKey = this.get('apiKey');
       if (!apiKey) {
-        reject(new Error("Filestack API key not found."));
+        reject(new Error('Filestack API key not found.'));
         return;
       }
 
@@ -151,11 +146,11 @@ export default Ember.Service.extend({
         resolve(instance);
         _isPromiseFulfilled = true;
       } else {
-        reject(new Error("Filestack not found."));
+        reject(new Error('Filestack not found.'));
         return;
       }
 
-      later(this, function(){
+      later(this, function() {
         if (!_isPromiseFulfilled){
           reject.call(null, new Error('Filestack load timeout.'));
         }
@@ -163,7 +158,7 @@ export default Ember.Service.extend({
     }));
   },
 
-  transformationBuilders: {
+  transformationBuilders: Object.freeze({
     _default(options) {
       let optionStrings = [];
 
@@ -182,6 +177,6 @@ export default Ember.Service.extend({
       if (!options.width && !options.height) { return []; }
 
       return this.transformationBuilders._default(options);
-    },
-  }
+    }
+  })
 });

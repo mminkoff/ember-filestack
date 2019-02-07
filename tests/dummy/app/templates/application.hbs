@@ -1,14 +1,14 @@
 <h2 id="title">Ember Filestack Demo</h2>
 
 {{#if showFilestack}}
-  {{ember-filestack-picker options=options onSelection=(action 'fileSelected') onClose=(action 'onClose') onError=(action 'onError')}}
+  {{ember-filestack-picker options=options onSelection=(action "fileSelected") onClose=(action "onClose") onError=(action "onError")}}
 {{/if}}
-<button {{action 'showPicker'}}>Choose file</button>
+<button onclick={{action "showPicker"}}>Choose file</button>
 
 {{#if pickedUrl}}
   <h3>You picked:</h3>
   <div class="picked">
-    <img src={{pickedUrl}} />
+    <img src={{pickedUrl}} alt="picked image">
   </div>
 {{/if}}
 

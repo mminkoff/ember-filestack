@@ -1,53 +1,55 @@
-import { moduleForComponent, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
-import wait from 'ember-test-helpers/wait';
 
-moduleForComponent('ember-filestack-picker', 'Integration | Component | ember filestack picker', {
-  integration: true
-});
+module('Integration | Component | ember filestack picker', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it renders', function (assert) {
-  this.set('options', {fromSources: 'local_file_system'});
+  test('it renders', async function(assert) {
+    this.set('options', { fromSources: 'local_file_system' });
 
-  this.render(hbs`{{ember-filestack-picker options=options}}`);
+    await render(hbs`{{ember-filestack-picker options=options}}`);
 
-  return wait().then(function () {
-    assert.equal(window.$('.fsp-picker').length, 1, 'pick modal is open');
+    assert.dom('.fsp-picker', document).exists({ count: 1 }, 'pick modal is open');
 
     // close any open pickers
-    window.$('.fsp-picker__close-button').click();
+    let button = document.querySelector('.fsp-picker__close-button');
+    await click(button);
+
+    assert.dom('.fsp-picker', document).doesNotExist('pick modal is closed');
   });
-});
 
-test('it renders with undefined options', function (assert) {
-  this.set('options', undefined);
+  test('it renders with undefined options', async function(assert) {
+    this.set('options', undefined);
 
-  this.render(hbs`{{ember-filestack-picker options=options}}`);
+    await render(hbs`{{ember-filestack-picker options=options}}`);
 
-  return wait().then(function () {
-    assert.equal(window.$('.fsp-picker').length, 1, 'pick modal is open');
+    assert.dom('.fsp-picker', document).exists({ count: 1 }, 'pick modal is open');
 
     // close any open pickers
-    window.$('.fsp-picker__close-button').click();
-  });
-});
+    let button = document.querySelector('.fsp-picker__close-button');
+    await click(button);
 
-test('it calls onClose', function (assert) {
-  this.set('options', {fromSources: 'local_file_system'});
-  this.set('onClose', () => {
-    this.set('closed', true);
+    assert.dom('.fsp-picker', document).doesNotExist('pick modal is closed');
   });
 
-  this.render(hbs`{{ember-filestack-picker onClose=onClose options=options}}`);
-
-  return wait().then(() => {
-    assert.equal(window.$('.fsp-picker').length, 1, 'pick modal is open');
-
-    // close any open pickers
-    window.$('.fsp-picker__close-button').click();
-
-    return wait().then(() => {
-      assert.equal(this.get('closed'), true);
+  test('it calls onClose', async function(assert) {
+    this.set('options', { fromSources: 'local_file_system' });
+    this.set('onClose', () => {
+      this.set('closed', true);
     });
+
+    await render(hbs`{{ember-filestack-picker onClose=onClose options=options}}`);
+
+    assert.dom('.fsp-picker', document).exists({ count: 1 }, 'pick modal is open');
+
+    // close any open pickers
+    let button = document.querySelector('.fsp-picker__close-button');
+    await click(button);
+
+    assert.equal(this.get('closed'), true);
+
+    assert.dom('.fsp-picker', document).doesNotExist('pick modal is closed');
   });
 });

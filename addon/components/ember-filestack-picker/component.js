@@ -1,13 +1,9 @@
-import Ember from 'ember';
+import Component from '@ember/component';
+import { scheduleOnce } from '@ember/runloop';
+import { inject as service } from '@ember/service';
 import layout from './template';
 
-const {
-  on,
-  run: { scheduleOnce },
-  inject: { service }
-} = Ember;
-
-export default Ember.Component.extend({
+export default Component.extend({
   layout,
 
   filestack: service(),
@@ -44,9 +40,10 @@ export default Ember.Component.extend({
   onSelection: null,
   onError: null,
   onClose: null,
-  options: {},
+  options: null,
 
-  openFilepicker: on('didInsertElement', function () {
+  didInsertElement() {
+    this._super(...arguments);
     scheduleOnce('afterRender', this, function () {
       this.get('filestack.promise').then((filestack) => {
         let options = this.get('options') || {};
@@ -58,5 +55,5 @@ export default Ember.Component.extend({
         });
       });
     });
-  })
+  }
 });
