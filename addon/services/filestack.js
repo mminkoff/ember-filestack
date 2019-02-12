@@ -6,7 +6,6 @@ import { getOwner } from '@ember/application';
 import { getProperties, computed } from '@ember/object';
 import { isPresent, isEmpty } from '@ember/utils';
 import { later } from '@ember/runloop';
-import filestack from 'filestack';
 
 const defaultContentCDN = 'https://cdn.filestackcontent.com';
 const defaultContentCDNRegex = new RegExp(`^${defaultContentCDN}`);
@@ -31,9 +30,6 @@ export default Service.extend({
   processCDN: reads('config.filestackProcessCDN'),
   contentCDN: reads('config.filestackContentCDN'),
   loadTimeout: reads('config.filestackLoadTimeout'),
-  fastboot: computed(function() {
-    return getOwner(this).lookup('service:fastboot');
-  }),
   isUsingCustomContentCDN: computed('contentCDN', function() {
     return this.get('contentCDN') !== defaultContentCDN;
   }),
@@ -41,7 +37,7 @@ export default Service.extend({
   init() {
     this._super(...arguments);
     this._loadConfig();
-    if (!this.get('fastboot.isFastBoot')) {
+    if (typeof FastBoot === 'undefined') {
       this._initFilestack();
     }
   },
@@ -129,26 +125,28 @@ export default Service.extend({
   _initFilestack() {
     var _isPromiseFulfilled = false;
 
-    this.set('promise', new Promise((resolve, reject)=> {
+    this.set('promise', new Promise((resolve, reject) => {
       const apiKey = this.get('apiKey');
       if (!apiKey) {
         reject(new Error('Filestack API key not found.'));
         return;
       }
 
-      if (filestack && filestack.init) {
-        const instance = filestack.init(apiKey);
+      import('filestack-js').then((filestack) => {
+        if (filestack && filestack.default && filestack.default.init) {
+          const instance = filestack.default.init(apiKey);
 
-        if (!(this.isDestroyed || this.isDestroying)) {
-          this.set('instance', instance);
+          if (!(this.isDestroyed || this.isDestroying)) {
+            this.set('instance', instance);
+          }
+
+          resolve(instance);
+          _isPromiseFulfilled = true;
+        } else {
+          reject(new Error('Filestack not found.'));
+          return;
         }
-
-        resolve(instance);
-        _isPromiseFulfilled = true;
-      } else {
-        reject(new Error('Filestack not found.'));
-        return;
-      }
+      });
 
       later(this, function() {
         if (!_isPromiseFulfilled){
