@@ -9,13 +9,13 @@ export default Component.extend({
   filestack: service(),
 
   actions: {
-    handleSelection (data) {
+    handleSelection(data) {
       if (this.get('onSelection')) {
         this.get('onSelection')(data);
       }
     },
 
-    handleError (data) {
+    handleError(data) {
       if (data.code === 101 && this.get('onClose')) {
         this.get('onClose')();
       } else if (this.get('onError')) {
@@ -23,7 +23,7 @@ export default Component.extend({
       }
     },
 
-    handleClose () {
+    handleClose() {
       const oc = this.get('onClose');
       if (oc) {
         oc();
@@ -31,7 +31,7 @@ export default Component.extend({
     }
   },
 
-  getCallClose () {
+  getCallClose() {
     return () => {
       this.send('handleClose');
     };
@@ -44,7 +44,7 @@ export default Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    scheduleOnce('afterRender', this, function () {
+    scheduleOnce('afterRender', this, function() {
       this.get('filestack.promise').then((filestack) => {
         let options = this.get('options') || {};
         options['onClose'] = options['onClose'] || this.getCallClose();

@@ -3,13 +3,13 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-module('Integration | Component | ember filestack picker', function(hooks) {
+module('Integration | Component | filestack picker', function(hooks) {
   setupRenderingTest(hooks);
 
   test('it renders', async function(assert) {
     this.set('options', { fromSources: 'local_file_system' });
 
-    await render(hbs`{{ember-filestack-picker options=options}}`);
+    await render(hbs`{{filestack-picker options=options}}`);
 
     assert.dom('.fsp-picker', document).exists({ count: 1 }, 'pick modal is open');
 
@@ -23,7 +23,7 @@ module('Integration | Component | ember filestack picker', function(hooks) {
   test('it renders with undefined options', async function(assert) {
     this.set('options', undefined);
 
-    await render(hbs`{{ember-filestack-picker options=options}}`);
+    await render(hbs`{{filestack-picker options=options}}`);
 
     assert.dom('.fsp-picker', document).exists({ count: 1 }, 'pick modal is open');
 
@@ -40,7 +40,7 @@ module('Integration | Component | ember filestack picker', function(hooks) {
       this.set('closed', true);
     });
 
-    await render(hbs`{{ember-filestack-picker onClose=onClose options=options}}`);
+    await render(hbs`{{filestack-picker onClose=onClose options=options}}`);
 
     assert.dom('.fsp-picker', document).exists({ count: 1 }, 'pick modal is open');
 

@@ -55,8 +55,8 @@ We recommend that you set up both of these CDNs because `ember-filestack` will e
 * Use the [Filestack Pick Documentation](https://www.filestack.com/docs/javascript-api/pick-v3) to determine what `options` you want to configure.
 
 #### Template
-```handlebars
-{{ember-filestack-picker options=filestackPickerOptions onSelection=(action 'fileSelected') onClose=(action 'onClose') onError=(action 'onError')}}
+```hbs
+{{filestack-picker options=filestackPickerOptions onSelection=(action 'fileSelected') onClose=(action 'onClose') onError=(action 'onError')}}
 ```
 
 #### Component
