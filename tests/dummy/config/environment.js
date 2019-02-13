@@ -17,8 +17,12 @@ module.exports = function(environment) {
       }
     },
 
-    filestackKey: "AOkSBYOLvTqK3GzWzQMOuz",
-    filestackLoadTimeout: 1000,
+    'ember-filestack': {
+      apiKey: 'AOkSBYOLvTqK3GzWzQMOuz',
+      pickerOptions: {
+        container: '#ember-testing'
+      }
+    },
 
     APP: {
       // Here you can pass flags/options to your application instance

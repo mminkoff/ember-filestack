@@ -1,59 +1,67 @@
 import Component from '@ember/component';
-import { scheduleOnce } from '@ember/runloop';
+import { computed } from '@ember/object';
+import { assign } from '@ember/polyfills';
 import { inject as service } from '@ember/service';
-import layout from './template';
 
 export default Component.extend({
-  layout,
+  tagName: '',
 
   filestack: service(),
 
-  actions: {
-    handleSelection(data) {
-      if (this.get('onSelection')) {
-        this.get('onSelection')(data);
+  // All the possible picker options taken from https://filestack.github.io/filestack-js/interfaces/pickeroptions.html
+  pickerOptions: Object.freeze([
+    'accept', 'allowManualRetry', 'cleanupImageExif', 'concurrency', 'container', 'customSourceContainer',
+    'customSourceName', 'customSourcePath', 'customText', 'disableStorageKey', 'disableThumbnails',
+    'disableTransformer', 'displayMode', 'dropPane', 'exposeOriginalFile', 'fromSources', 'globalDropZone',
+    'hideModalWhenUploading', 'imageDim', 'imageMax', 'imageMin', 'lang', 'maxFiles', 'maxSize', 'minFiles',
+    'modalSize', 'onCancel', 'onClose', 'onFileSelected', 'onFileUploadFailed', 'onFileUploadFinished',
+    'onFileUploadProgress', 'onFileUploadStarted', 'onOpen', 'onUploadDone', 'onUploadStarted', 'preferLinkOverStore',
+    'rootId', 'startUploadingWhenMaxFilesReached', 'storeTo', 'transformations', 'uploadConfig', 'uploadInBackground',
+    'videoResolution'
+  ]),
+
+  // gathers all the options to initialize picker
+  gatheredOptions: computed('pickerOptions.[]', function() {
+    let options = {};
+
+    this.get('pickerOptions').forEach((o) => {
+      let value = this.get(o);
+
+      if (value !== undefined) {
+        options[o] = value;
       }
-    },
+    });
 
-    handleError(data) {
-      if (data.code === 101 && this.get('onClose')) {
-        this.get('onClose')();
-      } else if (this.get('onError')) {
-        this.get('onError')(data);
-      }
-    },
-
-    handleClose() {
-      const oc = this.get('onClose');
-      if (oc) {
-        oc();
-      }
-    }
-  },
-
-  getCallClose() {
-    return () => {
-      this.send('handleClose');
-    };
-  },
-
-  onSelection: null,
-  onError: null,
-  onClose: null,
-  options: null,
+    return options;
+  }),
 
   didInsertElement() {
     this._super(...arguments);
-    scheduleOnce('afterRender', this, function() {
-      this.get('filestack.promise').then((filestack) => {
-        let options = this.get('options') || {};
-        options['onClose'] = options['onClose'] || this.getCallClose();
-        filestack.pick(options).then((data) => {
-          this.send('handleSelection', data);
-        }).catch((data) => {
-          this.send('handleError', data);
-        });
-      });
-    });
+    this.initPicker();
+  },
+
+  async initPicker() {
+    if (typeof FastBoot !== 'undefined') {
+      return;
+    }
+
+    try {
+      await this.get('filestack').initClient();
+
+      let options = this.get('options') || {};
+      let gatheredOptions = this.get('gatheredOptions');
+      let pickerOptions = assign({}, options, gatheredOptions);
+
+      let picker = await this.get('filestack').getPicker(pickerOptions);
+      await picker.open();
+
+      this.picker = picker;
+    } catch(e) {
+      if (this.get('onError')) {
+        this.get('onError')(e);
+      } else {
+        throw e;
+      }
+    }
   }
 });

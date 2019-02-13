@@ -4,203 +4,228 @@
 [![Build Status](https://travis-ci.org/mminkoff/ember-filestack.svg)](https://travis-ci.org/mminkoff/ember-filestack.svg?branch=master)
 [![Ember Observer Score](http://emberobserver.com/badges/ember-filestack.svg)](http://emberobserver.com/addons/ember-filestack)
 
-Provides file picking, storing, and converting funtionality from [Filestack](https://www.filestack.com) using [v3+ of their API](https://www.filestack.com/docs/javascript-api/pick-v3).
+Provides file picking, storing, and converting funtionality from [Filestack](https://www.filestack.com) using [filestack-js](https://github.com/filestack/filestack-js).
 
-This addon borrows from and builds heavily on [ember-cli-filepicker](https://github.com/DudaDev/ember-cli-filepicker)
+# Installation
 
-## Installation
+`ember install ember-filestack`
 
-* `ember install ember-filestack`
+# Configuration
 
-## Configuration
-### API Key
-* Create your filestack.com key here: https://www.filestack.com/.
-* Add your filestack.com key in your config/environment.js
+## API Key
+
+* Create your filestack.com key at https://www.filestack.com/.
+* Add your filestack.com key in your `config/environment.js` file
+
 ```js
-//config/environment.js
+// config/environment.js
 module.exports = function(environment) {
-  var ENV = {
+  let ENV = {
     //...
-    filestackKey: '<your-filestack-key>'
+    'ember-filestack': {
+      apiKey: 'AOkSBYOLvTqK3GzWzQMOuz'
+    }
   };
   //...
 }
+
 ```
 
-### Custom CDN
-To minimize your quota usage, you can put filestack behind your own CDNs.
+## Custom CDN
 
-There are two distinct filestack URL's you may want to proxy to.
+To minimize your quota usage (both bandwidth and process quotas), you can put filestack behind your own CDNs (e.g. AWS CloudFront).
+To do that you will want to proxy all urls with the host `https://cdn.filestackcontent.com`.
 
-#### https://cdn.filestackcontent.com
-This is where files uploaded to Filestack live. [Filestack's CDN](https://www.filestack.com/features/cdn) is excellent, but you may want to configure a proxy to this origin in order to preserve CDN bandwidth on your Filestack account.
+Then you can configure your custom CDN url like:
 
-#### https://process.filestackapi.com
-This is the entry point for dynamically transforming files. Each transformation produces a unique URL, but each `GET` to one of these URLs will count against your transformation quota regardless of whether or not it’s already been performed. Putting your own CDN in front of processing urls will dramatically reduce the number of transformation requests you make while still giving you the full power of Filestack’s Transformation APIs.
-
-To preserve your quotas, setup two CDNs (e.g., AWS CloudFront) to point to these URLs. Then configure `ember-filestack` to use your CDNs in ENV:
 ```js
+// config/environment.js
 module.exports = function(environment) {
-  var ENV = {
+  let ENV = {
     //...
-    filestackProcessCDN: '<your-process-cdn.cloudfront.net>',
-    filestackContentCDN: '<your-content-cdn.cloudfront.net>',
+    'ember-filestack': {
+      apiKey: '<your filestack api key>',
+      customCDN: '<your-cdn.cloudfront.net>'
+    }
   };
+  //...
 ```
 
-We recommend that you set up both of these CDNs because `ember-filestack` will ensure that Filestack’s CDN and Transformation API are never accessed directly.
+When `customCDN` is defined, `ember-filestack` will ensure that Filestack’s CDN is never accessed directly.
 
-## Usage
-### File Selection/Upload
-* Use the [Filestack Pick Documentation](https://www.filestack.com/docs/javascript-api/pick-v3) to determine what `options` you want to configure.
+## Global config for picker and preview
 
-#### Template
-```hbs
-{{filestack-picker options=filestackPickerOptions onSelection=(action 'fileSelected') onClose=(action 'onClose') onError=(action 'onError')}}
-```
+You can add global options for the picker and preview components (read more about them in the next sections).
+For that, you can use the `pickerOptions` and `previewOptions` keys in the ember-filestack config.
+Additionally, any necessary filestack [client options](https://filestack.github.io/filestack-js/interfaces/clientoptions.html) must be defined here.
 
-#### Component
+Example:
+
 ```js
-const filestackPickerOptions = {
-  accept: ['image/*'],
-  maxSize: 10485760
-};
+// config/environment.js
+module.exports = function(environment) {
+  let ENV = {
+    //...
+    'ember-filestack': {
+      // ...
+      clientOptions: {
+        // add any client options here
+      },
+      pickerOptions: {
+        // add any global picker options here
+      },
+      previewOptions: {
+        // add any global preview options here
+      }
+    }
+  };
+  //...
+```
 
+# Usage
+
+## File Picker
+
+The file picker is rendered using the `<FilestackPicker/>` component. This component accepts all the available picker options
+that the filestack picker accepts. Complete documentation of all the available options can be found
+[here](https://filestack.github.io/filestack-js/interfaces/pickeroptions.html).
+
+Example:
+
+```hbs
+<button onclick={{action (mut showFilestack) true}}>Choose file</button>
+
+{{#if showFilestack}}
+  <FilestackPicker
+    @accept="image/*"
+    @onUploadDone={{action "fileSelected"}}
+    @onClose={{action (mut showFilestack) false}}
+  />
+{{/if}}
+```
+
+```js
 export default Component.extend({
-  filestackPickerOptions,
   actions: {
     fileSelected(result) {
-      // the `filesUploaded` is an array of files you've just uploaded
+      // `result` is an array of files you've just uploaded
       console.log(result.filesUploaded);
-    },
-    onClose() {
-      // ...
-    },
-    onError(file, error) {
-      // ...
     }
   }
 });
 ```
 
-Complete documentation of all the available options and response data can be found [here](https://www.filestack.com/docs/javascript-api/pick-v3).
+## Generate file urls
 
-### Display
-#### Template Examples
-The `filestack-image` helper accepts a filestack handle or any image url plus any number of [transformations](#transformations) in the format `transformationName=(hash ...)`.
-```handlebars
-  {{filestack-image filestackHandleOrUrl}}
-  {{filestack-image filestackHandleOrUrl resize=(hash width=50 height=50 fit='scale')}}
-  {{filestack-image filestackHandleOrUrl output=(hash format='jpg')}}
-  {{filestack-image filestackHandleOrUrl output=(hash format='png') resize=(hash width=500 height=500 fit='max')}}
+When you need to generate a filestack url, you should use the `{{filestack-url}}` helper.
+
+This helper accepts a filestack handle or any image url as the first (and only) positional parameter.
+
+Additionally, you can pass in additional multiple named parameters that correspond to [transforms](https://www.filestack.com/docs/concepts/transform/).
+The helper accepts all the available transforms that filestack provides. You can check the available transform options
+[here](https://filestack.github.io/filestack-js/interfaces/transformoptions.html).
+
+Examples:
+
+```hbs
+{{filestack-url handleOrUrl}}
+
+{{filestack-url handleOrUrl resize=(hash width=50 height=50 fit="scale")}}
+
+{{filestack-url handleOrUrl output=(hash format="jpg")}}
+
+{{filestack-url handleOrUrl output=(hash format="png") resize=(hash width=500 height=500 fit="max")}}
 ```
 
-#### Component Examples
+You can also use the included `filestack` service to generate image urls:
+
 ```js
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+
 export default Component.extend({
   filestack: service(),
+
   scaledImage: computed('imageUrl', function() {
     let url = this.get('imageUrl');
     let transformations = {
       output: {
-        format: 'png',
+        format: 'png'
       },
       resize: {
         width: 500,
         height: 500,
-        fit: 'max',
-      },
+        fit: 'max'
+      }
     };
 
-    return this.get('filestack').imageUrl(url, transformations);
-  }),
+    return this.get('filestack').getUrl(url, transformations);
+  })
 });
 ```
 
+All of these will respect the `customCDN` configuration, if present.
 
-### Transformations
-The Filestack Transformations API provides a way to dynamically request a transformed version of any file (even ones not uploaded to Filestack).
+Notice that *it is* possible to write invalid transforms. For example, you can't specify a transform of
+`resize=(hash fit="some-invalid-value")`. Under the hook, `filestack-js` will validate the passed transform options,
+so expect errors if you do something wrong.
 
-#### Image
-[Filestack Image Transformation Docs](https://www.filestack.com/docs/image-transformations)
+## Filestack previewer
 
-You can use any transformation, but be aware that it is your responsibility to produce a valid transformation. For example, Filestack will return a `400 Bad Request` if you attempt to resize an SVG.
+Filestack has a feature to preview documents in a nice file previewer. This renders
+an iframe with filestack's previewer and it supports multiple formats. Read more about
+this feature [here](https://www.filestack.com/docs/concepts/transform/#document-viewer).
 
-Below you’ll find a list of transformations and notes on any further handling of the transformation that `ember-filestack` currently does.
+ember-filestack provides a `<FilestackPreview/>` component that you can use to quickly insert this
+iframe anywhere in your DOM.
 
-| Transformation | Notes |
-|:--------|:------------|
-| [ascii](https://www.filestack.com/docs/image-transformations/ascii) |  |
-| [blackwhite](https://www.filestack.com/docs/image-transformations/filters#blackwhite) |  |
-| [blur_faces](https://www.filestack.com/docs/image-transformations/facial-detection#blur_faces) |  |
-| [blur](https://www.filestack.com/docs/image-transformations/filters#blur) |  |
-| [border](https://www.filestack.com/docs/image-transformations/borders-and-effects#border) |  |
-| [cache](https://www.filestack.com/docs/image-transformations/caching) |  |
-| [circle](https://www.filestack.com/docs/image-transformations/borders-and-effects#circle) |  |
-| [collage](https://www.filestack.com/docs/image-transformations/collage) |  |
-| [compress](https://www.filestack.com/docs/image-transformations/compress) |  |
-| [crop_faces](https://www.filestack.com/docs/image-transformations/facial-detection#crop_faces) |  |
-| [crop](https://www.filestack.com/docs/image-transformations/crop) |  |
-| [debug](https://www.filestack.com/docs/image-transformations/debug) |  |
-| [detect_faces](https://www.filestack.com/docs/image-transformations/facial-detection#detect_faces) |  |
-| [enhance](https://www.filestack.com/docs/image-transformations/enchancements#enhance) |  |
-| [flip](https://www.filestack.com/docs/image-transformations/rotate#flip) |  |
-| [flop](https://www.filestack.com/docs/image-transformations/rotate#flop) |  |
-| [modulate](https://www.filestack.com/docs/image-transformations/filters#modulate) |  |
-| [monochrome](https://www.filestack.com/docs/image-transformations/filters#monochrome) |  |
-| [negative](https://www.filestack.com/docs/image-transformations/filters#negative) |  |
-| [oil_paint](https://www.filestack.com/docs/image-transformations/filters#oil_paint) |  |
-| [output](https://www.filestack.com/docs/image-transformations/conversion) |  |
-| [partial_blur](https://www.filestack.com/docs/image-transformations/filters#partial_blur) |  |
-| [partial_pixelate](https://www.filestack.com/docs/image-transformations/filters#partial_pixelate) |  |
-| [pixelate_faces](https://www.filestack.com/docs/image-transformations/facial-detection#pixelate_faces) |  |
-| [pixelate](https://www.filestack.com/docs/image-transformations/filters#pixelate) |  |
-| [polaroid](https://www.filestack.com/docs/image-transformations/borders-and-effects#polaroid) |  |
-| [quality](https://www.filestack.com/docs/image-transformations/quality) |  |
-| [redeye](https://www.filestack.com/docs/image-transformations/enhancements#redeye) |  |
-| [resize](https://www.filestack.com/docs/image-transformations/resize) | A resize transformation will not be attempted unless `width` or `height` is provided. |
-| [rotate](https://www.filestack.com/docs/image-transformations/rotate#rotate) |  |
-| [rounded_corners](https://www.filestack.com/docs/image-transformations/borders-and-effects#rounded-corners) |  |
-| [security](https://www.filestack.com/docs/image-transformations/security) |  |
-| [sepia](https://www.filestack.com/docs/image-transformations/filters#sepia) |  |
-| [shadow](https://www.filestack.com/docs/image-transformations/borders-and-effects#shadow) |  |
-| [sharpen](https://www.filestack.com/docs/image-transformations/filters#sharpen) |  |
-| [store](https://www.filestack.com/docs/image-transformations/store) |  |
-| [torn_edges](https://www.filestack.com/docs/image-transformations/borders-and-effects#torn-edges) |  |
-| [upscale](https://www.filestack.com/docs/image-transformations/enhancements#upscale) |  |
-| [urlscreenshot](https://www.filestack.com/docs/image-transformations/screenshot) |  |
-| [vignette](https://www.filestack.com/docs/image-transformations/borders-and-effects#vignette) |  |
-| [watermark](https://www.filestack.com/docs/image-transformations/watermark) |  |
-| [zip](https://www.filestack.com/docs/image-transformations/zip) |  |
+Example:
 
-### Direct Filestack JS API Access
-In order to access the browser’s `filestack` instance we recommend that you use `filestack.promise`.
+```hbs
+<FilestackPreview @handle={{fileHandle}}/>
+```
+
+This component supports all the preview options that filestack supports.
+Complete documentation of all the available options can be found
+[here](https://filestack.github.io/filestack-js/interfaces/previewoptions.html).
+
+## Direct filestack client Access
+
+Sometimes you might need to use the filestack client manually.
+To do that, you can use the `filestack` service `initClient` method as follows:
+
 ```js
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
+
 export default Component.extend({
-  //injecting the filestack object
+  // inject the filestack service
   filestack: service(),
 
-  someFunction: function(){
+  async someFunction() {
     // Use the promise in case you are not sure that your component will be initialized after filestack has been loaded
-    this.get('filestack.promise').then(function(filestack){
-      // do something with filestack
-    });
 
-    // OR if you are sure filestack has already been loaded use:
-    this.get('filestack.instance')
+    let filestack = await this.filestack.initClient();
+
+    // do something with filestack
   }
 });
 ```
 
-## Contributing - Pull Requests Welcome!
-### Adding Transformations
-There are nearly forty transformations for images alone. If you’re looking for a place to contribute consider adding a transformation builder.
+Notice that `initClient` is asynchronous (returns a Promise). This happens because we lazily initialize and import
+filestack client. Please read the next section for more information.
 
-A transformation builder accepts an `options` object (e.g., `{ "option1": 123, "option2": false }`) and returns a Filestack-compliant options string (e.g., `"option1:123,option2:false"`).
+## Lazy filestack initialization
 
-Adding custom transformation builders `ember-filestack` can prevent users from creating invalid transformations. See the `transformationBuilders` object in the `filestack` service for examples.
+All the filestack javascript and the respective filestack initialization is done **only when needed**.
+This means that, if a user never renders a filepicker or generates a filestack url, your app won't spend any
+resources or bandwidth with filestack related work.
 
-### Tests
-* `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
-* `ember test`
-* `ember test --server`
+With that being said, `ember-filestack` makes sure that it only initializes filestack **once**. This means that, for example,
+if you call `this.filestack.initClient()` twice, all the heavy work will be done once. In this example the second call
+would return the filestack client immediately.
+
+## Fastboot considerations
+
+`ember-filestack` will no-op on fastboot environments since `filestack-js` requires access to `document` (which isn't available on node).
