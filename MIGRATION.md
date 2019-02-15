@@ -5,7 +5,7 @@ that might need your attention during this process.
 
 ## Api key
 
-On 1.0.0, you had to configure your filestack like:
+On 1.0.0, you had to configure your filestack api key like:
 
 ```js
 // config/environment.js
