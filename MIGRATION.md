@@ -139,8 +139,8 @@ Things to note:
 - however, you can still use `@options={{someOptionsDefinedElsewhere}}` if you need to. These will be merged with the direct options explained above.
 - Custom actions like `onSelection` action are now replaced for `onUploadDone`, for example. This is what the filestack library uses, and there's no need to rename that. It's just another option we pass in directly.
 - You can now pass in two different types of actions to react to errors:
-  - `onError` is triggered when something goes wrong while initializing filestack or the picker itself. This is not triggered by filestack. It's not something very likely to occur, assuming that the api key is there and configs are correct.
-  - `onFileUploadFailed` is triggered by filestack library under the hood when the uploads themselves fail
+  - `onError` is triggered by `ember-filestack` itself when something goes wrong while initializing filestack or the picker. This is not triggered by the filestack library. It's not something very likely to occur, assuming that the api key is there and configs are correct.
+  - `onFileUploadFailed` is triggered by the filestack library under the hood when the upload fails
 - We just reference filestack's complete set of options here: https://filestack.github.io/filestack-js/interfaces/pickeroptions.html all of them are supported by this new component.
 
 ## Generate file urls
