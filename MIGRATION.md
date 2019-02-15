@@ -148,10 +148,10 @@ Things to note:
 Generating filestack urls for files on 1.0.0 was done using the `filestack-image` helper like:
 
 ```hbs
-{{filestack-image filestackHandleOrUrl}}
-{{filestack-image filestackHandleOrUrl resize=(hash width=50 height=50 fit="scale")}}
-{{filestack-image filestackHandleOrUrl output=(hash format="jpg")}}
-{{filestack-image filestackHandleOrUrl output=(hash format="png") resize=(hash width=500 height=500 fit="max")}}
+{{filestack-image handleOrUrl}}
+{{filestack-image handleOrUrl resize=(hash width=50 height=50 fit="scale")}}
+{{filestack-image handleOrUrl output=(hash format="jpg")}}
+{{filestack-image handleOrUrl output=(hash format="png") resize=(hash width=500 height=500 fit="max")}}
 ```
 
 Now we do:
