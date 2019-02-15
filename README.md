@@ -17,6 +17,10 @@ To use it on ember versions prior to 2.5, you must include [ember-assign-polyfil
 
 Angle bracket invocation syntax is optional, but if you can use it in ember versions back to 2.12 if you install [ember-angle-bracket-invocation-polyfill](https://github.com/rwjblue/ember-angle-bracket-invocation-polyfill) on your app.
 
+# Migration from 1.0.0
+
+If you need to migrate from the previous 1.0.0 release, please read our [migration guide](https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md).
+
 # Configuration
 
 ## API Key
@@ -34,8 +38,7 @@ module.exports = function(environment) {
     }
   };
   //...
-}
-
+};
 ```
 
 ## Custom CDN
@@ -56,6 +59,7 @@ module.exports = function(environment) {
     }
   };
   //...
+};
 ```
 
 When `customCDN` is defined, `ember-filestack` will ensure that Filestack’s CDN is never accessed directly.
@@ -100,13 +104,13 @@ that the filestack picker accepts. Complete documentation of all the available o
 Example:
 
 ```hbs
-<button onclick={{action (mut showFilestack) true}}>Choose file</button>
+<button onclick={{action (mut showFilePicker) true}}>Choose file</button>
 
-{{#if showFilestack}}
+{{#if showFilePicker}}
   <FilestackPicker
     @accept="image/*"
     @onUploadDone={{action "fileSelected"}}
-    @onClose={{action (mut showFilestack) false}}
+    @onClose={{action (mut showFilePicker) false}}
   />
 {{/if}}
 ```
