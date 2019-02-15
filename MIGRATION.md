@@ -131,6 +131,8 @@ or if you prefer with the new angle bracket invocation syntax (recommended):
 {{/if}}
 ```
 
+You can use angle bracket invocation syntax with old versions of ember using [ember-angle-bracket-invocation-polyfill](https://github.com/rwjblue/ember-angle-bracket-invocation-polyfill).
+
 Things to note:
 - the component name changed from `ember-filestack-picker` to just `filestack-picker`.
 - each key of `options` can now be passed directly to the component instead of having to build a hash yourself
