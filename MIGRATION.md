@@ -26,7 +26,7 @@ module.exports = function(environment) {
   let ENV = {
     //...
     'ember-filestack': {
-      apiKey: 'AOkSBYOLvTqK3GzWzQMOuz'
+      apiKey: '<your-filestack-key>'
     }
   };
   //...
