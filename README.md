@@ -19,7 +19,9 @@ Angle bracket invocation syntax is optional, but if you can use it in ember vers
 
 # Migration from 1.0.0
 
-If you need to migrate from the previous 1.0.0 release, please read our [migration guide](https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md).
+There are important changes since v1.0.0. Most will be supported with deprecation notices until v3.0.0. However, there have also been important changes in the underlyng filestack.js module.  Please refer to the [Filestack API changelog](https://github.com/filestack/filestack-js/blob/cc3196dc2a9c65ec503eb264d362998114ba142e/CHANGELOG.md) for changes to available options.
+
+Please read our [migration guide](https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md) for changes to `environment.js` and the Ember components.
 
 # Configuration
 
