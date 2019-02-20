@@ -112,6 +112,7 @@ Now you would use something like:
 {{#if showFilePicker}}
   {{filestack-picker
     accept="image/*"
+    maxSize=10485760
     onUploadDone=(action "fileSelected")
     onClose=(action (mut showFilePicker) false)
     onError=(action "onError")
@@ -125,6 +126,7 @@ or if you prefer with the new angle bracket invocation syntax (recommended):
 {{#if showFilePicker}}
   <FilestackPicker
     @accept="image/*"
+    @maxSize={{10485760}}
     @onUploadDone={{action "fileSelected"}}
     @onClose={{action (mut showFilePicker) false}}
   />
