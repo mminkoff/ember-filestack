@@ -2,8 +2,36 @@ import Service from '@ember/service';
 import { getOwner } from '@ember/application';
 import { assign } from '@ember/polyfills';
 import sanitizeTransformations from 'ember-filestack/utils/sanitize-transformations';
+import { deprecate } from '@ember/application/deprecations';
+import { computed } from '@ember/object';
 
 export default Service.extend({
+
+  promise: computed(function() {
+    deprecate('Using the `promise` property of the `filestack` service is deprecated. Please use the `filestack.initClient()` function instead.',
+      false,
+      {
+        id: 'ember-filestack.service-promise',
+        until: '2.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
+      }
+    );
+
+    return this.initClient();
+  }),
+
+  instance: computed(function() {
+    deprecate('Using the `instance` property of the `filestack` service is deprecated. Please use the `filestack.initClient()` function instead.',
+      false,
+      {
+        id: 'ember-filestack.service-instance',
+        until: '2.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
+      }
+    );
+
+    return this.get('client');
+  }),
 
   async initClient() {
     if (this.get('client')) {
@@ -11,9 +39,19 @@ export default Service.extend({
     }
 
     let ENV = getOwner(this).resolveRegistration('config:environment');
+    let deprecatedApiKey = ENV.filestackKey;
     let emberFilestackOptions = ENV['ember-filestack'] || {};
-    let apiKey = emberFilestackOptions.apiKey;
+    let apiKey = emberFilestackOptions.apiKey || deprecatedApiKey;
     let clientOptions = emberFilestackOptions.clientOptions;
+
+    deprecate('Using `ENV.filestackKey` is deprecated. Please use `ENV[\'ember-filestack\'].apiKey` instead. Please read migration guide for more information.',
+      deprecatedApiKey === undefined,
+      {
+        id: 'ember-filestack.env-filestack-key',
+        until: '2.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
+      }
+    );
 
     if (!apiKey) {
       throw new Error('Filestack API key not found.');
@@ -37,10 +75,20 @@ export default Service.extend({
     // glimmer gives us immutable EmptyObject instances, so we need to clone them
     transformations = assign({}, transformations);
     let ENV = getOwner(this).resolveRegistration('config:environment');
+    let deprecatedCDN = ENV.filestackProcessCDN || ENV.filestackContentCDN;
     let emberFilestackOptions = ENV['ember-filestack'] || {};
-    let customCDN = emberFilestackOptions.customCDN;
+    let customCDN = emberFilestackOptions.customCDN || deprecatedCDN;
     let isUrl = handleOrUrl.match(/^http(s?):\/\//);
     let filestackUrl;
+
+    deprecate('Using `ENV.filestackProcessCDN` or `ENV.filestackContentCDN` is deprecated. Please use `ENV[\'ember-filestack\'].customCDN` instead. Please read migration guide for more information.',
+      deprecatedCDN === undefined,
+      {
+        id: 'ember-filestack.env-cdn-keys',
+        until: '2.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
+      }
+    );
 
     if (isUrl && Object.keys(transformations).length === 0) {
       filestackUrl = handleOrUrl;
