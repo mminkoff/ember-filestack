@@ -12,7 +12,7 @@ export default Service.extend({
       false,
       {
         id: 'ember-filestack.service-promise',
-        until: '2.0.0',
+        until: '3.0.0',
         url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
     );
@@ -25,7 +25,7 @@ export default Service.extend({
       false,
       {
         id: 'ember-filestack.service-instance',
-        until: '2.0.0',
+        until: '3.0.0',
         url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
     );
@@ -48,7 +48,7 @@ export default Service.extend({
       deprecatedApiKey === undefined,
       {
         id: 'ember-filestack.env-filestack-key',
-        until: '2.0.0',
+        until: '3.0.0',
         url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
     );
@@ -85,7 +85,7 @@ export default Service.extend({
       deprecatedCDN === undefined,
       {
         id: 'ember-filestack.env-cdn-keys',
-        until: '2.0.0',
+        until: '3.0.0',
         url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
     );

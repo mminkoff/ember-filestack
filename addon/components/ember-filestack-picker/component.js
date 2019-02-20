@@ -14,7 +14,7 @@ export default Component.extend({
       false,
       {
         id: 'ember-filestack.ember-filestack-picker',
-        until: '2.0.0',
+        until: '3.0.0',
         url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
     );

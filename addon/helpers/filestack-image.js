@@ -8,7 +8,7 @@ export default FilestackUrlHelper.extend({
       false,
       {
         id: 'ember-filestack.filestack-image',
-        until: '2.0.0',
+        until: '3.0.0',
         url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
     );
