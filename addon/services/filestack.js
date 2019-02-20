@@ -1,187 +1,136 @@
-import Ember from 'ember';
-import filestack from 'filestack';
+import Service from '@ember/service';
+import { getOwner } from '@ember/application';
+import { assign } from '@ember/polyfills';
+import sanitizeTransformations from 'ember-filestack/utils/sanitize-transformations';
+import { deprecate } from '@ember/application/deprecations';
+import { computed } from '@ember/object';
 
-const {
-  RSVP: { Promise },
-  assign,
-  computed,
-  computed: { reads },
-  getOwner,
-  getProperties,
-  isEmpty,
-  isPresent,
-  run: { later },
-} = Ember;
+export default Service.extend({
 
-const defaultContentCDN = "https://cdn.filestackcontent.com";
-const defaultContentCDNRegex = new RegExp(`^${defaultContentCDN}`);
-
-const defaultConfig = {
-  filestackProcessCDN: "https://process.filestackapi.com",
-  filestackContentCDN: defaultContentCDN,
-  filestackLoadTimeout: 10000,
-};
-
-const configurationKeys = [
-  'filestackContentCDN',
-  'filestackKey',
-  'filestackLoadTimeout',
-  'filestackProcessCDN',
-]
-
-export default Ember.Service.extend({
-  promise: null,
-  instance: null,
-  apiKey: reads('config.filestackKey'),
-  processCDN: reads('config.filestackProcessCDN'),
-  contentCDN: reads('config.filestackContentCDN'),
-  loadTimeout: reads('config.filestackLoadTimeout'),
-  fastboot: computed(function() {
-    return getOwner(this).lookup('service:fastboot');
-  }),
-  isUsingCustomContentCDN: computed('contentCDN', function() {
-    return this.get('contentCDN') !== defaultContentCDN;
-  }),
-
-  init() {
-    this._super(...arguments);
-    this._loadConfig();
-    if (!this.get('fastboot.isFastBoot')) {
-      this._initFilestack();
-    }
-  },
-
-  imageUrl(handleOrUrl, transformations={}) {
-    if (!handleOrUrl) { return ''; }
-
-    let processUrl, contentUrl;
-    let transformationParts = this._buildTransformations(transformations);
-    let isUrl = handleOrUrl.match(/^http(s?):\/\//);
-
-    if (isUrl) {
-      // If it’s a URL then make sure it always loads from the content CDN
-      // ex: https://cdn.filestackcontent.com/0GI1H4G7TEO8SWRoOpXN => https://theworldsbestcdn.website/0GI1H4G7TEO8SWRoOpXN
-      contentUrl = handleOrUrl.replace(defaultContentCDNRegex, this.get('contentCDN'));
-    } else {
-      // If it’s not a URL treat it as a Filestack FileLink Handle
-      // ex: 0GI1H4G7TEO8SWRoOpXN => https://theworldsbestcdn.website/0GI1H4G7TEO8SWRoOpXN
-      contentUrl = `${this.get('contentCDN')}/${handleOrUrl}`;
-    }
-
-    if (isEmpty(transformationParts)) {
-      return contentUrl;
-    } else {
-      // if transformations are present then we need to call the Filestack Process API
-      if (isUrl) {
-        // If it’s content from a URL, we need to use the Filestack API key
-        processUrl = `${this.get('processCDN')}/${this.get('apiKey')}`;
-      } else {
-        // If it’s a Filestack FileLink Handle, no API key is necessary
-        processUrl = this.get('processCDN');
+  promise: computed(function() {
+    deprecate('Using the `promise` property of the `filestack` service is deprecated. Please use the `filestack.initClient()` function instead.',
+      false,
+      {
+        id: 'ember-filestack.service-promise',
+        until: '3.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
+    );
 
-      return [processUrl, transformationParts.join('/'), handleOrUrl].join('/');
+    return this.initClient();
+  }),
+
+  instance: computed(function() {
+    deprecate('Using the `instance` property of the `filestack` service is deprecated. Please use the `filestack.initClient()` function instead.',
+      false,
+      {
+        id: 'ember-filestack.service-instance',
+        until: '3.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
+      }
+    );
+
+    return this.get('client');
+  }),
+
+  async initClient() {
+    if (this.get('client')) {
+      return this.get('client');
     }
-  },
 
-  _loadConfig() {
     let ENV = getOwner(this).resolveRegistration('config:environment');
-    let config = getProperties(ENV, ...configurationKeys);
-    // clean out `config` since `getProperties` will return an object with valueless keys
-    configurationKeys.forEach((key) => (config[key] == null) && delete config[key]);
+    let deprecatedApiKey = ENV.filestackKey;
+    let emberFilestackOptions = ENV['ember-filestack'] || {};
+    let apiKey = emberFilestackOptions.apiKey || deprecatedApiKey;
+    let clientOptions = emberFilestackOptions.clientOptions;
 
-    let mergedConfig = assign({}, defaultConfig, config);
+    deprecate('Using `ENV.filestackKey` is deprecated. Please use `ENV[\'ember-filestack\'].apiKey` instead. Please read migration guide for more information.',
+      deprecatedApiKey === undefined,
+      {
+        id: 'ember-filestack.env-filestack-key',
+        until: '3.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
+      }
+    );
 
-    this.set('config', mergedConfig);
-  },
-
-  _buildTransformations(transformationHashes) {
-    let parts = [];
-    let transformations = assign({}, transformationHashes);
-    let transformationKeys = Object.keys(transformations);
-
-    // Immediately ignore legacy resize options if explicit 'resize' is provided
-    if (transformationKeys.indexOf('resize') !== -1) {
-      delete(transformations.width);
-      delete(transformations.height);
-      delete(transformations.fit);
+    if (!apiKey) {
+      throw new Error('Filestack API key not found.');
     }
 
-    let legacyResizeKeys = ['width', 'height', 'fit', 'align'].filter((legacyKey) => transformationKeys.indexOf(legacyKey) !== -1);
+    let filestack = await import('filestack-js');
 
-    if (legacyResizeKeys.length > 0) {
-      transformations['resize'] = {};
+    let client = filestack.init(apiKey, clientOptions);
 
-      legacyResizeKeys.forEach((legacyResizeKey) => {
-        transformations.resize[legacyResizeKey] = transformations[legacyResizeKey];
-        delete(transformations[legacyResizeKey]);
-      });
+    this.set('client', client);
+
+    return client;
+  },
+
+  getUrl(handleOrUrl, transformations) {
+    let filestack = this.get('client');
+    if (!filestack) {
+      throw new Error('Attempted to generate a transform url without calling `initClient` first.');
     }
 
-    Object.keys(transformations).forEach((transformationName) => {
-      let optionsHash = transformations[transformationName];
-      let options = (this.transformationBuilders[transformationName] || this.transformationBuilders._default).call(this, optionsHash);
-      let transformationValue = options.join(',');
+    // glimmer gives us immutable EmptyObject instances, so we need to clone them
+    transformations = assign({}, transformations);
+    let ENV = getOwner(this).resolveRegistration('config:environment');
+    let deprecatedCDN = ENV.filestackProcessCDN || ENV.filestackContentCDN;
+    let emberFilestackOptions = ENV['ember-filestack'] || {};
+    let customCDN = emberFilestackOptions.customCDN || deprecatedCDN;
+    let isUrl = handleOrUrl.match(/^http(s?):\/\//);
+    let filestackUrl;
 
-      if (transformationValue) {
-        parts.push(`${transformationName}=${transformationValue}`);
+    deprecate('Using `ENV.filestackProcessCDN` or `ENV.filestackContentCDN` is deprecated. Please use `ENV[\'ember-filestack\'].customCDN` instead. Please read migration guide for more information.',
+      deprecatedCDN === undefined,
+      {
+        id: 'ember-filestack.env-cdn-keys',
+        until: '3.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
-    });
+    );
 
-    return parts;
+    if (isUrl && Object.keys(transformations).length === 0) {
+      filestackUrl = handleOrUrl;
+    } else {
+      sanitizeTransformations(transformations);
+      filestackUrl = filestack.transform(handleOrUrl, transformations);
+    }
+
+    if (customCDN) {
+      return filestackUrl.replace(filestack.session.urls.cdnUrl, customCDN);
+    } else {
+      return filestackUrl;
+    }
   },
 
-  _initFilestack() {
-    var _isPromiseFulfilled = false;
+  async getPicker(options) {
+    let filestack = this.get('client');
+    if (!filestack) {
+      throw new Error('Attempted to generate a transform url without calling `initClient` first.');
+    }
 
-    this.set('promise', new Promise((resolve, reject)=> {
-      const apiKey = this.get('apiKey');
-      if (!apiKey) {
-        reject(new Error("Filestack API key not found."));
-        return;
-      }
+    let ENV = getOwner(this).resolveRegistration('config:environment');
+    let emberFilestackOptions = ENV['ember-filestack'] || {};
+    let configOptions = emberFilestackOptions.pickerOptions;
 
-      if (filestack && filestack.init) {
-        const instance = filestack.init(apiKey);
+    let pickerOptions = assign({}, configOptions, options);
 
-        if (!(this.isDestroyed || this.isDestroying)) {
-          this.set('instance', instance);
-        }
-
-        resolve(instance);
-        _isPromiseFulfilled = true;
-      } else {
-        reject(new Error("Filestack not found."));
-        return;
-      }
-
-      later(this, function(){
-        if (!_isPromiseFulfilled){
-          reject.call(null, new Error('Filestack load timeout.'));
-        }
-      }, this.get('loadTimeout'));
-    }));
+    return await filestack.picker(pickerOptions);
   },
 
-  transformationBuilders: {
-    _default(options) {
-      let optionStrings = [];
+  preview(handle, options) {
+    let filestack = this.get('client');
+    if (!filestack) {
+      throw new Error('Attempted to preview file without calling `initClient` first.');
+    }
 
-      Object.keys(options).forEach((optionName) => {
-        let optionValue = options[optionName];
+    let ENV = getOwner(this).resolveRegistration('config:environment');
+    let emberFilestackOptions = ENV['ember-filestack'] || {};
+    let configOptions = emberFilestackOptions.previewOptions;
 
-        if (isPresent(optionValue)) {
-          optionStrings.push(`${optionName}:${optionValue.toString()}`);
-        }
-      });
+    let previewOptions = assign({}, configOptions, options);
 
-      return optionStrings;
-    },
-
-    resize(options) {
-      if (!options.width && !options.height) { return []; }
-
-      return this.transformationBuilders._default(options);
-    },
+    return filestack.preview(handle, previewOptions);
   }
 });

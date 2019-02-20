@@ -1,62 +1,22 @@
-import Ember from 'ember';
+import Component from '@ember/component';
 import layout from './template';
 
-const {
-  on,
-  run: { scheduleOnce },
-  inject: { service }
-} = Ember;
+import { deprecate } from '@ember/application/deprecations';
 
-export default Ember.Component.extend({
+export default Component.extend({
+  tagName: '',
   layout,
 
-  filestack: service(),
+  init() {
+    this._super(...arguments);
 
-  actions: {
-    handleSelection (data) {
-      if (this.get('onSelection')) {
-        this.get('onSelection')(data);
+    deprecate('`ember-filestack-picker` component is deprecated and will be removed in future versions. Please use `filestack-picker` component instead and check documentation on its new features.',
+      false,
+      {
+        id: 'ember-filestack.ember-filestack-picker',
+        until: '3.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
       }
-    },
-
-    handleError (data) {
-      if (data.code === 101 && this.get('onClose')) {
-        this.get('onClose')();
-      } else if (this.get('onError')) {
-        this.get('onError')(data);
-      }
-    },
-
-    handleClose () {
-      const oc = this.get('onClose');
-      if (oc) {
-        oc();
-      }
-    }
-  },
-
-  getCallClose () {
-    return () => {
-      this.send('handleClose');
-    };
-  },
-
-  onSelection: null,
-  onError: null,
-  onClose: null,
-  options: {},
-
-  openFilepicker: on('didInsertElement', function () {
-    scheduleOnce('afterRender', this, function () {
-      this.get('filestack.promise').then((filestack) => {
-        let options = this.get('options') || {};
-        options['onClose'] = options['onClose'] || this.getCallClose();
-        filestack.pick(options).then((data) => {
-          this.send('handleSelection', data);
-        }).catch((data) => {
-          this.send('handleError', data);
-        });
-      });
-    });
-  })
+    );
+  }
 });

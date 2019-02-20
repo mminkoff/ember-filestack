@@ -1,1 +1,1 @@
-export { default, filestackImage } from 'ember-filestack/helpers/filestack-image';
+export { default } from 'ember-filestack/helpers/filestack-image';

@@ -1,13 +1,19 @@
-import Ember from 'ember';
+import FilestackUrlHelper from './filestack-url';
+import { deprecate } from '@ember/application/deprecations';
 
-const {
-  Helper,
-  inject: { service },
-} = Ember;
+export default FilestackUrlHelper.extend({
 
-export default Helper.extend({
-  filestack: service(),
-  compute([handleOrUrl], transformations) {
-    return this.get('filestack').imageUrl(handleOrUrl, transformations);
+  compute() {
+    deprecate('`filestack-image` helper is deprecated and will be removed in future versions. Please use `filestack-url` helper instead and check documentation on its new features.',
+      false,
+      {
+        id: 'ember-filestack.filestack-image',
+        until: '3.0.0',
+        url: 'https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md'
+      }
+    );
+
+    return this._super(...arguments);
   }
+
 });
