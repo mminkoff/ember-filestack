@@ -9,7 +9,7 @@ module('Integration | Component | filestack preview', function(hooks) {
   test('renders an iframe with filestack preview url', async function(assert) {
 
     await render(hbs`
-      <FilestackPreview @handle="01234567890123456789"/>
+      {{filestack-preview handle="01234567890123456789"}}
     `);
 
     await settled();
@@ -21,7 +21,7 @@ module('Integration | Component | filestack preview', function(hooks) {
   test('css argument is reflected on iframe url', async function(assert) {
 
     await render(hbs`
-      <FilestackPreview @handle="01234567890123456789" @css="background-color: yellow"/>
+      {{filestack-preview handle="01234567890123456789" css="background-color: yellow"}}
     `);
 
     await settled();
