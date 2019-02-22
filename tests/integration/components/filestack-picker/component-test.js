@@ -9,7 +9,7 @@ module('Integration | Component | filestack picker', function(hooks) {
   test('it renders', async function(assert) {
 
     await render(hbs`
-      {{filestack-picker}}
+      <FilestackPicker/>
     `);
 
     await waitFor('.fsp-picker');
@@ -26,7 +26,7 @@ module('Integration | Component | filestack picker', function(hooks) {
     this.set('options', undefined);
 
     await render(hbs`
-      {{filestack-picker options=options}}
+      <FilestackPicker @options={{options}} />
     `);
 
     assert.dom('.fsp-picker').exists({ count: 1 }, 'pick modal is open');
@@ -44,7 +44,7 @@ module('Integration | Component | filestack picker', function(hooks) {
     });
 
     await render(hbs`
-      {{filestack-picker onClose=onClose options=options}}
+      <FilestackPicker @onClose={{onClose}} @options={{options}} />
     `);
 
     assert.dom('.fsp-picker').exists({ count: 1 }, 'pick modal is open');
