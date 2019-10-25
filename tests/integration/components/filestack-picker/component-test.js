@@ -29,6 +29,8 @@ module('Integration | Component | filestack picker', function(hooks) {
       <FilestackPicker @options={{options}} />
     `);
 
+    await waitFor('.fsp-picker');
+
     assert.dom('.fsp-picker').exists({ count: 1 }, 'pick modal is open');
 
     // close any open pickers
@@ -38,7 +40,7 @@ module('Integration | Component | filestack picker', function(hooks) {
   });
 
   test('it calls onClose', async function(assert) {
-    this.set('options', { fromSources: 'local_file_system' });
+    this.set('options', { fromSources: ['local_file_system'] });
     this.set('onClose', () => {
       this.set('closed', true);
     });
@@ -46,6 +48,8 @@ module('Integration | Component | filestack picker', function(hooks) {
     await render(hbs`
       <FilestackPicker @onClose={{onClose}} @options={{options}} />
     `);
+
+    await waitFor('.fsp-picker');
 
     assert.dom('.fsp-picker').exists({ count: 1 }, 'pick modal is open');
 
