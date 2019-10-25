@@ -11,11 +11,15 @@
 {{/if}}
 
 {{#if fileHandle}}
-  <h3>You picked:</h3>
-  <img src={{filestack-url fileHandle}} alt="picked image">
-{{/if}}
+  <div class="results">
+    <div class="picked">
+      <h3>You picked:</h3>
+      <img src={{filestack-url fileHandle}} alt="picked image">
+    </div>
 
-{{#if fileHandle}}
-  <h3>Previewer:</h3>
-  <FilestackPreview @handle={{fileHandle}} />
+    <div class="previewer">
+      <h3>Previewer:</h3>
+      <FilestackPreview @handle={{fileHandle}} />
+    </div>
+  </div>
 {{/if}}

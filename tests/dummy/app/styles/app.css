@@ -1,0 +1,24 @@
+.results {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.picked {
+  flex: 1 1;
+  min-width: 300px;
+}
+
+.picked img {
+  width: 100%;
+}
+
+.previewer {
+  flex: 1 0 20%;
+  min-width: 320px;
+  margin-right: 1em;
+}
+
+.previewer iframe {
+  min-height: 400px;
+}
