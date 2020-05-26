@@ -10,7 +10,13 @@ Provides file picking, storing, and converting funtionality from [Filestack](htt
 
 `ember install ember-filestack`
 
-ember-filestack supports all ember LTS versions (that means 3.4+ at the moment). With that being said,
+# Compatibility
+
+* Ember.js v3.12 or above
+* Ember CLI v2.13 or above
+* Node.js v10 or above
+
+ember-filestack supports all ember LTS versions (that means 3.8+ at the moment). With that being said,
 it may support versions even older than that.
 
 To use it on ember versions prior to 2.5, you must include [ember-assign-polyfill](https://github.com/shipshapecode/ember-assign-polyfill) on your app.

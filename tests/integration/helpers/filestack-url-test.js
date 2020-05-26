@@ -22,7 +22,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url handle resize=(hash width=200 height=300 fit="crop")}}
     `);
 
-    assert.dom('*').hasText(`${FILESTACK_CDN}/${this.apiKey}/resize=width:200,height:300,fit:crop/${this.handle}`);
+    assert.dom().hasText(`${FILESTACK_CDN}/${this.apiKey}/resize=width:200,height:300,fit:crop/${this.handle}`);
   });
 
   test('it renders a link filestack cdn without options', async function(assert) {
@@ -30,7 +30,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url handle}}
     `);
 
-    assert.dom('*').hasText(`${FILESTACK_CDN}/${this.apiKey}/${this.handle}`);
+    assert.dom().hasText(`${FILESTACK_CDN}/${this.apiKey}/${this.handle}`);
   });
 
   test('it handles urls with missing arguments (crop is undefined here)', async function(assert) {
@@ -38,7 +38,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url imageUrl resize=(hash width=500 fit=crop)}}
     `);
 
-    assert.dom('*').hasText(`${FILESTACK_CDN}/${this.apiKey}/resize=width:500/"${this.imageUrl}"`);
+    assert.dom().hasText(`${FILESTACK_CDN}/${this.apiKey}/resize=width:500/"${this.imageUrl}"`);
   });
 
   test('it handles false handles/urls', async function(assert) {
@@ -48,7 +48,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url handle}}
     `);
 
-    assert.dom('*').hasText('');
+    assert.dom().hasText('');
   });
 
   test('it handles missing hash arguments', async function(assert) {
@@ -58,7 +58,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url handle resize=(hash width=200 height=300 fit=crop)}}
     `);
 
-    assert.dom('*').hasText(`${FILESTACK_CDN}/${this.apiKey}/resize=width:200,height:300/${this.handle}`);
+    assert.dom().hasText(`${FILESTACK_CDN}/${this.apiKey}/resize=width:200,height:300/${this.handle}`);
   });
 
   test('it renders the original URL when options are missing & passed a URL', async function(assert) {
@@ -66,7 +66,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url imageUrl}}
     `);
 
-    assert.dom('*').hasText(this.imageUrl);
+    assert.dom().hasText(this.imageUrl);
   });
 
   test('it uses customCDN config when passed an image URL', async function(assert) {
@@ -78,7 +78,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url imageUrl resize=(hash width=500 fit="crop")}}
     `);
 
-    assert.dom('*').hasText(`${customCDN}/${this.apiKey}/resize=width:500,fit:crop/"${this.imageUrl}"`);
+    assert.dom().hasText(`${customCDN}/${this.apiKey}/resize=width:500,fit:crop/"${this.imageUrl}"`);
   });
 
   test('it uses customCDN config when passed an image token', async function(assert) {
@@ -90,7 +90,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url handle resize=(hash width=500 fit="crop")}}
     `);
 
-    assert.dom('*').hasText(`${customCDN}/${this.apiKey}/resize=width:500,fit:crop/${this.handle}`);
+    assert.dom().hasText(`${customCDN}/${this.apiKey}/resize=width:500,fit:crop/${this.handle}`);
   });
 
   test('it uses customCDN config when passed an image URL that begins with cdn.filestackcontent.com', async function(assert) {
@@ -105,7 +105,7 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url imageUrl}}
     `);
 
-    assert.dom('*').hasText(`${customCDN}/2h25ZGRHTfmQ2DBEt3yR`);
+    assert.dom().hasText(`${customCDN}/2h25ZGRHTfmQ2DBEt3yR`);
   });
 
   test('it does not use customCDN config when passed an image URL that does not begin with cdn.filestackcontent.com', async function(assert) {
@@ -117,6 +117,6 @@ module('helper:filestack-url', function(hooks) {
       {{filestack-url imageUrl}}
     `);
 
-    assert.dom('*').hasText(this.imageUrl);
+    assert.dom().hasText(this.imageUrl);
   });
 });
