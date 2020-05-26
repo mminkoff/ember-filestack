@@ -15,14 +15,14 @@ export default Helper.extend({
       return;
     }
 
-    if (!this.get('filestack.client')) {
-      this.get('filestack').initClient().then(() => {
+    if (!this.filestack.client) {
+      this.filestack.initClient().then(() => {
         // workaround bug https://github.com/emberjs/ember.js/issues/14774
         join(() => this.recompute());
       });
       return;
     }
 
-    return this.get('filestack').getUrl(handleOrUrl, transformations);
+    return this.filestack.getUrl(handleOrUrl, transformations);
   }
 });

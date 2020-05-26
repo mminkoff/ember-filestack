@@ -1,6 +1,6 @@
 {
   "name": "ember-filestack",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Ember Addon for https://filestack.com support",
   "keywords": [
     "ember-addon",
@@ -38,7 +38,7 @@
     "@glimmer/tracking": "^1.0.0",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
-    "ember-auto-import": "^1.5.2",
+    "ember-auto-import": "^1.5.3",
     "ember-cli": "~3.18.0",
     "ember-cli-dependency-checker": "^3.2.0",
     "ember-cli-fastboot": "^2.0.4",

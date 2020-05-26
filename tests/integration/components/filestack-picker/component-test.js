@@ -56,7 +56,7 @@ module('Integration | Component | filestack picker', function(hooks) {
     // close any open pickers
     await click('.fsp-picker__close-button');
 
-    assert.equal(this.get('closed'), true);
+    assert.equal(this.closed, true);
 
     assert.dom('.fsp-picker').doesNotExist('pick modal is closed');
   });

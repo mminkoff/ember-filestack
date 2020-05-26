@@ -1,25 +1,25 @@
 <h2 id="title">Ember Filestack Demo</h2>
 
-<button onclick={{action (mut showFilestack) true}}>Choose file</button>
+<button type="button" {{on "click" (fn (mut this.showFilestack) true)}}>Choose file</button>
 
-{{#if showFilestack}}
+{{#if this.showFilestack}}
   <FilestackPicker
     @accept="image/*"
-    @onUploadDone={{action "fileSelected"}}
-    @onClose={{action (mut showFilestack) false}}
+    @onUploadDone={{this.fileSelected}}
+    @onClose={{fn (mut this.showFilestack) false}}
   />
 {{/if}}
 
-{{#if fileHandle}}
+{{#if this.fileHandle}}
   <div class="results">
     <div class="picked">
       <h3>You picked:</h3>
-      <img src={{filestack-url fileHandle}} alt="picked image">
+      <img src={{filestack-url this.fileHandle}} alt="picked">
     </div>
 
     <div class="previewer">
       <h3>Previewer:</h3>
-      <FilestackPreview @handle={{fileHandle}} />
+      <FilestackPreview @handle={{this.fileHandle}} />
     </div>
   </div>
 {{/if}}

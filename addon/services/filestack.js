@@ -6,8 +6,8 @@ import sanitizeTransformations from 'ember-filestack/utils/sanitize-transformati
 export default Service.extend({
 
   async initClient() {
-    if (this.get('client')) {
-      return this.get('client');
+    if (this.client) {
+      return this.client;
     }
 
     let ENV = getOwner(this).resolveRegistration('config:environment');
@@ -29,7 +29,7 @@ export default Service.extend({
   },
 
   getUrl(handleOrUrl, transformations) {
-    let filestack = this.get('client');
+    let filestack = this.client;
     if (!filestack) {
       throw new Error('Attempted to generate a transform url without calling `initClient` first.');
     }
@@ -57,7 +57,7 @@ export default Service.extend({
   },
 
   async getPicker(options) {
-    let filestack = this.get('client');
+    let filestack = this.client;
     if (!filestack) {
       throw new Error('Attempted to generate a transform url without calling `initClient` first.');
     }
@@ -72,7 +72,7 @@ export default Service.extend({
   },
 
   preview(handle, options) {
-    let filestack = this.get('client');
+    let filestack = this.client;
     if (!filestack) {
       throw new Error('Attempted to preview file without calling `initClient` first.');
     }

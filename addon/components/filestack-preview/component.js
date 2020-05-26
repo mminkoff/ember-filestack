@@ -19,7 +19,7 @@ export default Component.extend({
   gatheredOptions: computed('previewOptions.[]', function() {
     let options = {};
 
-    this.get('previewOptions').forEach((o) => {
+    this.previewOptions.forEach((o) => {
       let value = this.get(o);
 
       if (value !== undefined) {
@@ -40,22 +40,22 @@ export default Component.extend({
       return;
     }
 
-    let handle = this.get('handle');
+    let handle = this.handle;
     if (!handle) {
       throw new Error('Attempted to preview file without setting mandatory `handle` argument.');
     }
 
     try {
-      await this.get('filestack').initClient();
+      await this.filestack.initClient();
 
-      let options = this.get('options') || {};
-      let gatheredOptions = this.get('gatheredOptions');
+      let options = this.options || {};
+      let gatheredOptions = this.gatheredOptions;
       let pickerOptions = assign({}, options, gatheredOptions);
 
-      this.get('filestack').preview(handle, pickerOptions);
+      this.filestack.preview(handle, pickerOptions);
     } catch(e) {
-      if (this.get('onError')) {
-        this.get('onError')(e);
+      if (this.onError) {
+        this.onError(e);
       } else {
         throw e;
       }

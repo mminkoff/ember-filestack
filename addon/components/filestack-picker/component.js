@@ -24,7 +24,7 @@ export default Component.extend({
   gatheredOptions: computed('pickerOptions.[]', function() {
     let options = {};
 
-    this.get('pickerOptions').forEach((o) => {
+    this.pickerOptions.forEach((o) => {
       let value = this.get(o);
 
       if (value !== undefined) {
@@ -46,19 +46,19 @@ export default Component.extend({
     }
 
     try {
-      await this.get('filestack').initClient();
+      await this.filestack.initClient();
 
-      let options = this.get('options') || {};
-      let gatheredOptions = this.get('gatheredOptions');
+      let options = this.options || {};
+      let gatheredOptions = this.gatheredOptions;
       let pickerOptions = assign({}, options, gatheredOptions);
 
-      let picker = await this.get('filestack').getPicker(pickerOptions);
+      let picker = await this.filestack.getPicker(pickerOptions);
       await picker.open();
 
       this.picker = picker;
     } catch(e) {
-      if (this.get('onError')) {
-        this.get('onError')(e);
+      if (this.onError) {
+        this.onError(e);
       } else {
         throw e;
       }

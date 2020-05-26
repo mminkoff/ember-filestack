@@ -1,11 +1,14 @@
 import Controller from '@ember/controller';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Controller.extend({
-  showFilestack: false,
+export default class ApplicationController extends Controller {
+  showFilestack = false;
 
-  actions: {
-    fileSelected(data) {
-      this.set('fileHandle', data.filesUploaded[0].handle);
-    }
+  @tracked fileHandle;
+
+  @action
+  fileSelected(data) {
+    this.fileHandle = data.filesUploaded[0].handle;
   }
-});
+}
