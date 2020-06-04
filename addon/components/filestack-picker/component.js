@@ -40,6 +40,13 @@ export default Component.extend({
     this.initPicker();
   },
 
+  didUpdateAttrs() {
+    if (this.picker) {
+      this.picker.close();
+    }
+    this.initPicker();
+  },
+
   async initPicker() {
     if (typeof FastBoot !== 'undefined') {
       return;

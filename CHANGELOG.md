@@ -1,6 +1,28 @@
 # Change Log
 
-## [3.0.0](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+## [3.1.0](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.0.2...HEAD)
+
+**Changes**
+
+- FilestackPicker component will update the picker when provided options are updated
+
+## [3.0.2](https://github.com/mminkoff/ember-filestack/tree/3.0.2) (2020-05-31)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.0.0...HEAD)
+
+**Changes**
+
+- Updated to Filestack-js 3.15
+- Updated to Ember 3.18
+- Updated syntax for full Ember Octane compatibility
+
+**Closed issues:**
+
+- Addon not working on Ember 3.11 [\#16](https://github.com/mminkoff/ember-filestack/issues/16)
+
+## [3.0.0](https://github.com/mminkoff/ember-filestack/tree/3.0.0) (2019-10-25)
 
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v2.0.1...HEAD)
 
