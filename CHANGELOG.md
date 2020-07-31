@@ -1,8 +1,16 @@
 # Change Log
 
+## [3.1.1](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.1.0...v3.1.1)
+
+**Changes**
+
+- Updated elliptic, lodash, and websocket-extensions
+
 ## [3.1.0](https://github.com/mminkoff/ember-filestack/tree/HEAD)
 
-[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.0.2...HEAD)
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.0.2...v3.1.0)
 
 **Changes**
 
@@ -10,7 +18,7 @@
 
 ## [3.0.2](https://github.com/mminkoff/ember-filestack/tree/3.0.2) (2020-05-31)
 
-[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.0.0...HEAD)
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.0.0...v3.0.2)
 
 **Changes**
 
@@ -24,7 +32,7 @@
 
 ## [3.0.0](https://github.com/mminkoff/ember-filestack/tree/3.0.0) (2019-10-25)
 
-[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v2.0.1...HEAD)
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v2.0.1...v3.0.0)
 
 **Changes**
 
