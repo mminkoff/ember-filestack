@@ -1,5 +1,13 @@
 # Change Log
 
+## [3.1.2](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.1.1...v3.1.2)
+
+**Changes**
+
+- Updated various dependencies
+
 ## [3.1.1](https://github.com/mminkoff/ember-filestack/tree/HEAD)
 
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.1.0...v3.1.1)
