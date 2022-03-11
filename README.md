@@ -12,9 +12,9 @@ Provides file picking, storing, and converting funtionality from [Filestack](htt
 
 # Compatibility
 
-* Ember.js v3.12 or above
-* Ember CLI v2.13 or above
-* Node.js v10 or above
+* Ember.js v3.24 or above
+* Ember CLI v3.24 or above
+* Node.js v12 or above
 
 ember-filestack supports all ember LTS versions (that means 3.8+ at the moment). With that being said,
 it may support versions even older than that.

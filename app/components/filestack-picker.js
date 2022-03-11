@@ -1,1 +1,1 @@
-export { default } from 'ember-filestack/components/filestack-picker/component';
+export { default } from 'ember-filestack/components/filestack-picker';

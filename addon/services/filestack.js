@@ -1,10 +1,8 @@
 import Service from '@ember/service';
 import { getOwner } from '@ember/application';
-import { assign } from '@ember/polyfills';
 import sanitizeTransformations from 'ember-filestack/utils/sanitize-transformations';
 
-export default Service.extend({
-
+export default class FilestackService extends Service {
   async initClient() {
     if (this.client) {
       return this.client;
@@ -23,19 +21,21 @@ export default Service.extend({
 
     let client = filestack.init(apiKey, clientOptions);
 
-    this.set('client', client);
+    this.client = client;
 
     return client;
-  },
+  }
 
   getUrl(handleOrUrl, transformations) {
     let filestack = this.client;
     if (!filestack) {
-      throw new Error('Attempted to generate a transform url without calling `initClient` first.');
+      throw new Error(
+        'Attempted to generate a transform url without calling `initClient` first.'
+      );
     }
 
     // glimmer gives us immutable EmptyObject instances, so we need to clone them
-    transformations = assign({}, transformations);
+    transformations = Object.assign({}, transformations);
     let ENV = getOwner(this).resolveRegistration('config:environment');
     let emberFilestackOptions = ENV['ember-filestack'] || {};
     let customCDN = emberFilestackOptions.customCDN;
@@ -54,35 +54,39 @@ export default Service.extend({
     } else {
       return filestackUrl;
     }
-  },
+  }
 
   async getPicker(options) {
     let filestack = this.client;
     if (!filestack) {
-      throw new Error('Attempted to generate a transform url without calling `initClient` first.');
+      throw new Error(
+        'Attempted to generate a transform url without calling `initClient` first.'
+      );
     }
 
     let ENV = getOwner(this).resolveRegistration('config:environment');
     let emberFilestackOptions = ENV['ember-filestack'] || {};
     let configOptions = emberFilestackOptions.pickerOptions;
 
-    let pickerOptions = assign({}, configOptions, options);
+    let pickerOptions = Object.assign({}, configOptions, options);
 
     return await filestack.picker(pickerOptions);
-  },
+  }
 
   preview(handle, options) {
     let filestack = this.client;
     if (!filestack) {
-      throw new Error('Attempted to preview file without calling `initClient` first.');
+      throw new Error(
+        'Attempted to preview file without calling `initClient` first.'
+      );
     }
 
     let ENV = getOwner(this).resolveRegistration('config:environment');
     let emberFilestackOptions = ENV['ember-filestack'] || {};
     let configOptions = emberFilestackOptions.previewOptions;
 
-    let previewOptions = assign({}, configOptions, options);
+    let previewOptions = Object.assign({}, configOptions, options);
 
     return filestack.preview(handle, previewOptions);
   }
-});
+}

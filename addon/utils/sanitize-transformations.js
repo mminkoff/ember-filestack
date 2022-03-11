@@ -8,7 +8,7 @@ export default function sanitizeTransformations(obj) {
     if (type === 'object' && value !== null) {
       sanitizeTransformations(value);
       if (Object.keys(value).length === 0) {
-        delete obj[key]
+        delete obj[key];
       }
     } else if (isNone(value)) {
       delete obj[key];
