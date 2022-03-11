@@ -1,11 +1,10 @@
 import Helper from '@ember/component/helper';
 import { inject as service } from '@ember/service';
 import { isBlank } from '@ember/utils';
-import { join } from '@ember/runloop';
 import { warn } from '@ember/debug';
 
-export default Helper.extend({
-  filestack: service(),
+export default class FilestackUrlHelper extends Helper {
+  @service filestack;
 
   compute([handleOrUrl], transformations) {
     if (typeof FastBoot !== 'undefined') {
@@ -18,8 +17,7 @@ export default Helper.extend({
 
     if (!this.filestack.client) {
       this.filestack.initClient().then(() => {
-        // workaround bug https://github.com/emberjs/ember.js/issues/14774
-        join(() => this.recompute());
+        this.recompute();
       });
       return;
     }
@@ -27,10 +25,13 @@ export default Helper.extend({
     try {
       return this.filestack.getUrl(handleOrUrl, transformations);
     } catch (e) {
-      warn(`An error occurred while trying to generate a filestack url for the handle '${handleOrUrl}'. Is this a valid filestack handle or url? Error: ${e}`, {
-        id: 'ember-filestack.filestack-url-generation'
-      });
+      warn(
+        `An error occurred while trying to generate a filestack url for the handle '${handleOrUrl}'. Is this a valid filestack handle or url? Error: ${e}`,
+        {
+          id: 'ember-filestack.filestack-url-generation',
+        }
+      );
       return '';
     }
   }
-});
+}
