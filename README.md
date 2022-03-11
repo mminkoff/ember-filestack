@@ -12,20 +12,16 @@ Provides file picking, storing, and converting funtionality from [Filestack](htt
 
 # Compatibility
 
-* Ember.js v3.24 or above
-* Ember CLI v3.24 or above
-* Node.js v12 or above
+- Ember.js v3.24 or above
+- Ember CLI v3.24 or above
+- Node.js v12 or above
 
-ember-filestack supports all ember LTS versions (that means 3.8+ at the moment). With that being said,
+ember-filestack supports all ember LTS versions (that means 3.24+ at the moment). With that being said,
 it may support versions even older than that.
-
-To use it on ember versions prior to 2.5, you must include [ember-assign-polyfill](https://github.com/shipshapecode/ember-assign-polyfill) on your app.
-
-Angle bracket invocation syntax is optional, but if you can use it in ember versions back to 2.12 if you install [ember-angle-bracket-invocation-polyfill](https://github.com/rwjblue/ember-angle-bracket-invocation-polyfill) on your app.
 
 # Migration from 1.0.0
 
-There are important changes since v1.0.0. Most will be supported with deprecation notices until v3.0.0. However, there have also been important changes in the underlyng filestack.js module.  Please refer to the [Filestack API changelog](https://github.com/filestack/filestack-js/blob/cc3196dc2a9c65ec503eb264d362998114ba142e/CHANGELOG.md) for changes to available options.
+There are important changes since v1.0.0. Most will be supported with deprecation notices until v3.0.0. However, there have also been important changes in the underlyng filestack.js module. Please refer to the [Filestack API changelog](https://github.com/filestack/filestack-js/blob/cc3196dc2a9c65ec503eb264d362998114ba142e/CHANGELOG.md) for changes to available options.
 
 Please read our [migration guide](https://github.com/mminkoff/ember-filestack/blob/master/MIGRATION.md) for changes to `environment.js` and the Ember components.
 
@@ -33,17 +29,17 @@ Please read our [migration guide](https://github.com/mminkoff/ember-filestack/bl
 
 ## API Key
 
-* Create your filestack.com key at https://www.filestack.com/.
-* Add your filestack.com key in your `config/environment.js` file
+- Create your filestack.com key at https://www.filestack.com/.
+- Add your filestack.com key in your `config/environment.js` file
 
 ```js
 // config/environment.js
-module.exports = function(environment) {
+module.exports = function (environment) {
   let ENV = {
     //...
     'ember-filestack': {
-      apiKey: 'AOkSBYOLvTqK3GzWzQMOuz'
-    }
+      apiKey: 'AOkSBYOLvTqK3GzWzQMOuz',
+    },
   };
   //...
 };
@@ -58,13 +54,13 @@ Then you can configure your custom CDN url like:
 
 ```js
 // config/environment.js
-module.exports = function(environment) {
+module.exports = function (environment) {
   let ENV = {
     //...
     'ember-filestack': {
       apiKey: '<your filestack api key>',
-      customCDN: '<your-cdn.cloudfront.net>'
-    }
+      customCDN: '<your-cdn.cloudfront.net>',
+    },
   };
   //...
 };
@@ -112,26 +108,25 @@ that the filestack picker accepts. Complete documentation of all the available o
 Example:
 
 ```hbs
-<button onclick={{action (mut showFilePicker) true}}>Choose file</button>
+<button type='button' {{on 'click' (fn (mut this.showFilePicker) true)}}>Choose
+  file</button>
 
-{{#if showFilePicker}}
+{{#if this.showFilePicker}}
   <FilestackPicker
-    @accept="image/*"
-    @onUploadDone={{action "fileSelected"}}
-    @onClose={{action (mut showFilePicker) false}}
+    @accept='image/*'
+    @onUploadDone={{this.fileSelected}}
+    @onClose={{fn (mut this.showFilePicker) false}}
   />
 {{/if}}
 ```
 
 ```js
-export default Component.extend({
-  actions: {
-    fileSelected(result) {
-      // `result` is an array of files you've just uploaded
-      console.log(result.filesUploaded);
-    }
+export default class FileUploader extends Component {
+  fileSelected(result) {
+    // `result` is an array of files you've just uploaded
+    console.log(result.filesUploaded);
   }
-});
+}
 ```
 
 ## Generate file urls
@@ -147,46 +142,50 @@ The helper accepts all the available transforms that filestack provides. You can
 Examples:
 
 ```hbs
-{{filestack-url handleOrUrl}}
+{{filestack-url this.handleOrUrl}}
 
-{{filestack-url handleOrUrl resize=(hash width=50 height=50 fit="scale")}}
+{{filestack-url this.handleOrUrl resize=(hash width=50 height=50 fit='scale')}}
 
-{{filestack-url handleOrUrl output=(hash format="jpg")}}
+{{filestack-url this.handleOrUrl output=(hash format='jpg')}}
 
-{{filestack-url handleOrUrl output=(hash format="png") resize=(hash width=500 height=500 fit="max")}}
+{{filestack-url
+  this.handleOrUrl
+  output=(hash format='png')
+  resize=(hash width=500 height=500 fit='max')
+}}
 ```
 
 You can also use the included `filestack` service to generate image urls:
 
 ```js
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-export default Component.extend({
-  filestack: service(),
+export default class MyComponent extends Component {
+  @service filestack;
 
-  scaledImage: computed('imageUrl', function() {
-    let url = this.get('imageUrl');
+  get scaledImage() {
+    let url = this.args.imageUrl;
     let transformations = {
       output: {
-        format: 'png'
+        format: 'png',
       },
       resize: {
         width: 500,
         height: 500,
-        fit: 'max'
-      }
+        fit: 'max',
+      },
     };
 
-    return this.get('filestack').getUrl(url, transformations);
-  })
-});
+    return this.filestack.getUrl(url, transformations);
+  }
+}
 ```
 
 All of these will respect the `customCDN` configuration, if present.
 
-Notice that *it is* possible to write invalid transforms. For example, you can't specify a transform of
+Notice that _it is_ possible to write invalid transforms. For example, you can't specify a transform of
 `resize=(hash fit="some-invalid-value")`. Under the hook, `filestack-js` will validate the passed transform options,
 so expect errors if you do something wrong.
 
@@ -202,7 +201,7 @@ iframe anywhere in your DOM.
 Example:
 
 ```hbs
-<FilestackPreview @handle={{fileHandle}}/>
+<FilestackPreview @handle={{this.fileHandle}} />
 ```
 
 This component supports all the preview options that filestack supports.
@@ -215,12 +214,12 @@ Sometimes you might need to use the filestack client manually.
 To do that, you can use the `filestack` service `initClient` method as follows:
 
 ```js
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 
-export default Component.extend({
+export default class MyComponent extends Component {
   // inject the filestack service
-  filestack: service(),
+  @service filestack;
 
   async someFunction() {
     // Use the promise in case you are not sure that your component will be initialized after filestack has been loaded
@@ -229,7 +228,7 @@ export default Component.extend({
 
     // do something with filestack
   }
-});
+}
 ```
 
 Notice that `initClient` is asynchronous (returns a Promise). This happens because we lazily initialize and import
