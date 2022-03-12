@@ -19,6 +19,8 @@ Provides file picking, storing, and converting funtionality from [Filestack](htt
 ember-filestack supports all ember LTS versions (that means 3.24+ at the moment). With that being said,
 it may support versions even older than that.
 
+Your consuming app must depend on ember-auto-import >= 2 in order to use this addon.
+
 # Migration from 1.0.0
 
 There are important changes since v1.0.0. Most will be supported with deprecation notices until v3.0.0. However, there have also been important changes in the underlyng filestack.js module. Please refer to the [Filestack API changelog](https://github.com/filestack/filestack-js/blob/cc3196dc2a9c65ec503eb264d362998114ba142e/CHANGELOG.md) for changes to available options.
