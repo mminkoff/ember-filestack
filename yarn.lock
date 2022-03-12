@@ -1059,7 +1059,7 @@
     semver "^7.3.5"
     typescript-memoize "^1.0.1"
 
-"@embroider/test-setup@^1.2.0":
+"@embroider/test-setup@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@embroider/test-setup/-/test-setup-1.5.0.tgz#bf6a3663ef3089a865fd76c55f60a62aa6a2e18f"
   integrity sha512-4C0dgVswxfA/lBCD8FUWADQhjeO8AJ2KmRkvItOPSwPlAA1QI7gOD28DuiAnCAK18muIFq7P++gvl1qBNid6lg==
@@ -4791,7 +4791,7 @@ ember-source@~4.2.0:
     semver "^7.3.4"
     silent-error "^1.1.1"
 
-ember-template-lint@^4.2.0:
+ember-template-lint@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/ember-template-lint/-/ember-template-lint-4.3.0.tgz#4bb6050db57eeeaa8f944151c9fef9cf582e7217"
   integrity sha512-a+UFZDTGMUStY8wnzFQyD3BmA/UKdegQ4WDikS0TbhVTx9tK6aOnVh5lV33Xr4Fbf3Pee1N1//XdCulWpUajMg==
@@ -5043,7 +5043,7 @@ escodegen@^2.0.0:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-prettier@^8.4.0:
+eslint-config-prettier@^8.5.0:
   version "8.5.0"
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
@@ -11069,7 +11069,7 @@ webpack@^4.43.0:
     watchpack "^1.7.4"
     webpack-sources "^1.4.1"
 
-webpack@^5.69.1:
+webpack@^5.70.0:
   version "5.70.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.70.0.tgz#3461e6287a72b5e6e2f4872700bc8de0d7500e6d"
   integrity sha512-ZMWWy8CeuTTjCxbeaQI21xSswseF2oNOwc70QSKNePvmxE7XW36i7vpBMYZFAUHPwQiEbNGCEYIOOlyRbdGmxw==

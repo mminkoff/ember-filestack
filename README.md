@@ -1,7 +1,7 @@
 # ember-filestack
 
 [![npm version](https://badge.fury.io/js/ember-filestack.svg)](http://badge.fury.io/js/ember-filestack)
-[![Build Status](https://travis-ci.org/mminkoff/ember-filestack.svg)](https://travis-ci.org/mminkoff/ember-filestack.svg?branch=master)
+[![CI](https://github.com/mminkoff/ember-filestack/actions/workflows/ci.yml/badge.svg)](https://github.com/mminkoff/ember-filestack/actions/workflows/ci.yml)
 [![Ember Observer Score](http://emberobserver.com/badges/ember-filestack.svg)](http://emberobserver.com/addons/ember-filestack)
 
 Provides file picking, storing, and converting funtionality from [Filestack](https://www.filestack.com) using [filestack-js](https://github.com/filestack/filestack-js).
