@@ -5586,10 +5586,10 @@ filesize@^8.0.6:
   resolved "https://registry.yarnpkg.com/filesize/-/filesize-8.0.7.tgz#695e70d80f4e47012c132d57a059e80c6b580bd8"
   integrity sha512-pjmC+bkIF8XI7fWaH8KxHcZL3DPybs1roSKP4rKDvy20tAWwIObE4+JIseG2byfGKhud5ZnM4YSGKBz7Sh0ndQ==
 
-filestack-js@^3.25.0:
-  version "3.25.0"
-  resolved "https://registry.yarnpkg.com/filestack-js/-/filestack-js-3.25.0.tgz#e50c4da038560274951d4de739318c1254078eb6"
-  integrity sha512-SvLkS2P1FMEN8bGwHiV9HJiSypNWkSITx+24a28ao+a7EhsNLYwCkjRgouoIGFIBNWW9IAo6AM1VGcvI+XnQ9w==
+filestack-js@^3.26.1:
+  version "3.26.1"
+  resolved "https://registry.yarnpkg.com/filestack-js/-/filestack-js-3.26.1.tgz#709d48c25cbbd30d3cd4c808d0dc1e6d81746b28"
+  integrity sha512-DN0hG0K4jt0UKdYO0AQ1CNsbJqgqvs5B7tETjYlCqJDG+cAje3ycJx+ydwHAoSSFVl0QWzI+kV96VIjL52OeXA==
   dependencies:
     "@babel/runtime" "^7.8.4"
     "@filestack/loader" "^1.0.4"
