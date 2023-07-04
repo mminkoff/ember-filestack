@@ -1,6 +1,6 @@
 {
   "name": "ember-filestack",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Ember Addon for https://filestack.com support",
   "keywords": [
     "ember-addon",
