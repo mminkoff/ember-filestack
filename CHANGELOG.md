@@ -1,6 +1,42 @@
 # Change Log
 
-## [3.1.3](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+## [4.2.0](https://github.com/mminkoff/ember-filestack/tree/4.2.0)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/4.1.1...4.2.0)
+
+**Changes**
+
+- update filestack-js to `^3.30.0`
+
+## [4.1.1](https://github.com/mminkoff/ember-filestack/tree/4.1.0)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/4.1.0...4.1.1)
+
+**Changes**
+
+- do not enforce ember-source peer dependency
+
+## [4.1.0](https://github.com/mminkoff/ember-filestack/tree/4.1.0)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/4.0.0...4.1.0)
+
+**Changes**
+
+- update project and dependencies, including filestack-js to `^3.26.1`
+
+## [4.0.0](https://github.com/mminkoff/ember-filestack/tree/4.0.0)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.1.3...v4.0.0)
+
+**Changes**
+
+- [#41](https://github.com/mminkoff/ember-filestack/pull/41) update project
+  - updates the project to the latest ember-cli using ember-cli-update
+  - migrates classic components to glimmer components 💅
+  - updates filestack-js
+  - updated README
+
+## [3.1.3](https://github.com/mminkoff/ember-filestack/tree/3.1.3)
 
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.1.2...v3.1.3)
 
@@ -9,7 +45,7 @@
 - [#22](https://github.com/mminkoff/ember-filestack/pull/22) fail graciously on incorrect handles
 - updated ini dependency
 
-## [3.1.2](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+## [3.1.2](https://github.com/mminkoff/ember-filestack/tree/3.1.2)
 
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.1.1...v3.1.2)
 
@@ -17,7 +53,7 @@
 
 - Updated various dependencies
 
-## [3.1.1](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+## [3.1.1](https://github.com/mminkoff/ember-filestack/tree/3.1.1)
 
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.1.0...v3.1.1)
 
@@ -25,7 +61,7 @@
 
 - Updated elliptic, lodash, and websocket-extensions
 
-## [3.1.0](https://github.com/mminkoff/ember-filestack/tree/HEAD)
+## [3.1.0](https://github.com/mminkoff/ember-filestack/tree/3.1.0)
 
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v3.0.2...v3.1.0)
 
@@ -68,6 +104,7 @@
 - update dependencies [\#13](https://github.com/mminkoff/ember-filestack/pull/13) ([miguelcobain](https://github.com/miguelcobain))
 
 ## [v2.0.1](https://github.com/mminkoff/ember-filestack/tree/v2.0.1) (2019-02-22)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v2.0.0...v2.0.1)
 
 **Merged pull requests:**
@@ -75,6 +112,7 @@
 - use angle bracket invocation in tests [\#11](https://github.com/mminkoff/ember-filestack/pull/11) ([miguelcobain](https://github.com/miguelcobain))
 
 ## [v2.0.0](https://github.com/mminkoff/ember-filestack/tree/v2.0.0) (2019-02-21)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v1.0.0...v2.0.0)
 
 **Closed issues:**
@@ -86,12 +124,15 @@
 - addon rewrite [\#10](https://github.com/mminkoff/ember-filestack/pull/10) ([miguelcobain](https://github.com/miguelcobain))
 
 ## [v1.0.0](https://github.com/mminkoff/ember-filestack/tree/v1.0.0) (2018-07-20)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v0.2.0...v1.0.0)
 
 ## [v0.2.0](https://github.com/mminkoff/ember-filestack/tree/v0.2.0) (2018-07-20)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/v0.1.0...v0.2.0)
 
 ## [v0.1.0](https://github.com/mminkoff/ember-filestack/tree/v0.1.0) (2018-07-20)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/0.0.8...v0.1.0)
 
 **Merged pull requests:**
@@ -101,6 +142,7 @@
 - Help avoid unnecessary hits to process & invalid requests [\#5](https://github.com/mminkoff/ember-filestack/pull/5) ([sdhull](https://github.com/sdhull))
 
 ## [0.0.8](https://github.com/mminkoff/ember-filestack/tree/0.0.8) (2017-12-12)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/0.0.7...0.0.8)
 
 **Merged pull requests:**
@@ -108,6 +150,7 @@
 - bump filestack version [\#4](https://github.com/mminkoff/ember-filestack/pull/4) ([nolman](https://github.com/nolman))
 
 ## [0.0.7](https://github.com/mminkoff/ember-filestack/tree/0.0.7) (2017-11-09)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/0.0.6...0.0.7)
 
 **Closed issues:**
@@ -120,18 +163,21 @@
 - Update README.md [\#3](https://github.com/mminkoff/ember-filestack/pull/3) ([rizkysyazuli](https://github.com/rizkysyazuli))
 
 ## [0.0.6](https://github.com/mminkoff/ember-filestack/tree/0.0.6) (2017-09-15)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/0.0.5...0.0.6)
 
 ## [0.0.5](https://github.com/mminkoff/ember-filestack/tree/0.0.5) (2017-07-05)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/0.0.4...0.0.5)
 
 ## [0.0.4](https://github.com/mminkoff/ember-filestack/tree/0.0.4) (2017-06-24)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/0.3...0.0.4)
 
 ## [0.3](https://github.com/mminkoff/ember-filestack/tree/0.3) (2017-06-01)
+
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/0.0.3...0.3)
 
 ## [0.0.3](https://github.com/mminkoff/ember-filestack/tree/0.0.3) (2017-06-01)
 
-
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* _This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)_
