@@ -11,7 +11,7 @@ module('Integration | Component | filestack picker', function (hooks) {
       <FilestackPicker/>
     `);
 
-    await waitFor('.fsp-picker');
+    await waitFor('.fsp-picker', { timeout: 2000 });
 
     assert.dom('.fsp-picker').exists({ count: 1 }, 'pick modal is open');
 
@@ -28,7 +28,7 @@ module('Integration | Component | filestack picker', function (hooks) {
       <FilestackPicker @options={{this.options}} />
     `);
 
-    await waitFor('.fsp-picker');
+    await waitFor('.fsp-picker', { timeout: 2000 });
 
     assert.dom('.fsp-picker').exists({ count: 1 }, 'pick modal is open');
 
@@ -48,7 +48,7 @@ module('Integration | Component | filestack picker', function (hooks) {
       <FilestackPicker @onClose={{this.onClose}} @options={{this.options}} />
     `);
 
-    await waitFor('.fsp-picker');
+    await waitFor('.fsp-picker', { timeout: 2000 });
 
     assert.dom('.fsp-picker').exists({ count: 1 }, 'pick modal is open');
 
