@@ -1,5 +1,13 @@
 # Change Log
 
+## [5.0.0](https://github.com/mminkoff/ember-filestack/tree/5.0.0)
+
+[Full Changelog](https://github.com/mminkoff/ember-filestack/compare/4.2.0...5.0.0)
+
+**Changes**
+
+- update filestack-js to `^4.3.5`
+
 ## [4.2.0](https://github.com/mminkoff/ember-filestack/tree/4.2.0)
 
 [Full Changelog](https://github.com/mminkoff/ember-filestack/compare/4.1.1...4.2.0)
